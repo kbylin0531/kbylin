@@ -14,9 +14,7 @@ class General {
     use Render;
 
     public function __construct(){
-        defined('CSS_URI') or define('CSS_URI',PUBLIC_URI.'Admin/css/');
-        defined('JS_URI') or define('JS_URI',PUBLIC_URI.'Admin/js/');
-        defined('IMG_URI') or define('IMG_URI',PUBLIC_URI.'Admin/images/');
+        defined('ADMIN_URI') or define('ADMIN_URI',PUBLIC_URI.'Admin/');
         defined('STATIC_URI') or define('STATIC_URI',PUBLIC_URI.'static/');
 
         $this->generalAssign();
@@ -30,7 +28,6 @@ class General {
             'update_nickname'   => Router::create('Admin','User','updateNickname'),
             'logout'            => Router::create('Admin','User','logout'),
 
-            'logo'      => IMG_URI.'/bg_icon.png',
         ]);
 
         $this->assign('menu_list',[

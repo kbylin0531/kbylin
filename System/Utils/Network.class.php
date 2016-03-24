@@ -181,23 +181,19 @@ class Network {
     /**
      * 获取基础URI（到脚本为止）
      * 默认为80时会显示为隐藏
-     * @return string
+     * @param string|null $protocol 协议
+     * @param string|null $hostname 主机名称
+     * @param bool $full 是否取完整
+     * @return string 返回URI的基础部分
      */
-    /**
-     * @param null $protocol
-     * @param null $hostname
-     * @return null|string
-     */
-    public static function getBasicUrl($protocol=null,$hostname=null){
+    public static function getBasicUrl($protocol=null,$hostname=null,$full=false){
         static $uri = [];
         $key = $protocol.''.$hostname;
         if(!isset($uri[$key])){
-            $uri[$key] = (isset($protocol)?$protocol:$_SERVER['REQUEST_SCHEME'])
-                .'://'. (isset($hostname)?$hostname:$_SERVER['SERVER_NAME']).
-                (80 == $_SERVER['SERVER_PORT']?'':':'.$_SERVER['SERVER_PORT']).
-                $_SERVER['SCRIPT_NAME'];
+            $uri[$key] = $full? (isset($protocol)?$protocol:$_SERVER['REQUEST_SCHEME']) .'://'. (isset($hostname)?$hostname:$_SERVER['SERVER_NAME']).
+                    (80 == $_SERVER['SERVER_PORT']?'':':'.$_SERVER['SERVER_PORT']).$_SERVER['SCRIPT_NAME']
+                :$_SERVER['SCRIPT_NAME'];
         }
-//        UDK::dump($_SERVER['REQUEST_SCHEME'],$_SERVER['SERVER_NAME'],$hostname,$_SERVER['SERVER_PORT'],$_SERVER['SCRIPT_NAME'],$uri[$key]);
         return $uri[$key];
     }
 

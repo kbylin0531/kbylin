@@ -6,16 +6,17 @@
         {block name="meta_title"}OneThink管理平台{/block}
     </title>
     <link href="{$smarty.const.PUBLIC_URI}/Public/favicon.ico" type="image/x-icon" rel="shortcut icon">
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.CSS_URI}/base.css" media="all">
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.CSS_URI}/common.css" media="all">
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.CSS_URI}/module.css">
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.CSS_URI}/style.css" media="all">
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.CSS_URI}/{$style}.css" media="all">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}/css/base.css" media="all">{* 基础样式 *}
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}/css/common.css" media="all">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}/css/module.css">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}/css/style.css" media="all">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}/css/{$style}.css" media="all"> {* 主题样式 *}
     <!--[if lt IE 9]>
-    <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-1.10.2.min.js"></script>
-    <![endif]--><!--[if gte IE 9]><!-->
-    <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-2.0.3.min.js"></script>
-    <script type="text/javascript" src="{$smarty.const.JS_URI}/jquery.mousewheel.js"></script>
+        <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-1.10.2.min.js"></script>
+    <![endif]-->
+    <!--[if gte IE 9]><!-->
+        <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-2.0.3.min.js"></script>
+        <script type="text/javascript" src="{$smarty.const.ADMIN_URI}/js/jquery.mousewheel.js"></script>
     <!--<![endif]-->
     {block name="style"}{/block}
 </head>
@@ -23,7 +24,7 @@
 <!-- 头部 -->
 <div class="header">
     <!-- Logo -->
-    <span class="logo" style="background: url({$uri.logo}) no-repeat 0 -45px;"></span>
+    <span class="logo"></span>
     <!-- /Logo -->
 
     <!-- 主导航 -->
@@ -103,7 +104,7 @@
     })();
 </script>
 <script type="text/javascript" src="{$smarty.const.STATIC_URI}/think.js"></script>
-<script type="text/javascript" src="{$smarty.const.JS_URI}/common.js"></script>
+<script type="text/javascript" src="{$smarty.const.ADMIN_URI}/js/common.js"></script>
 <script type="text/javascript">
     (function () {
         /******** 头部管理员菜单 **************/
@@ -118,27 +119,28 @@
             userMenu.data("timeout", setTimeout(function(){ userMenu.addClass("hidden");}, 100));//setTimeout返回延时时间
         });
 
-
         /******** 左侧子菜单菜单 **************/
-        var subnavs = $(".subnav");
+        var subnav = $("#subnav");
+        var $window = $(window);
 
-        var $window = $(window), $subnav = $("#subnav"), url;
         $window.resize(function () {
+            //min-height为元素的最小高度，元素一定大于等于这个高度
             $("#main").css("min-height", $window.height() - 130);
         }).resize();
 
-        /* 左边菜单高亮 */
-        url = window.location.pathname + window.location.search;
+        /******** 左边菜单高亮 **************/
+//        var url = window.location.protocol+"//"+window.location.hostname+ window.location.pathname + window.location.search;//当前页面的链接
+        var url = window.location.pathname;
         url = url.replace(/(\/(p)\/\d+)|(&p=\d+)|(\/(id)\/\d+)|(&id=\d+)|(\/(group)\/\d+)|(&group=\d+)/, "");
-        $subnav.find("a[href='" + url + "']").parent().addClass("current");
+        subnav.find("a[href='" + url + "']").parent().addClass("current");
 
         /* 左边菜单显示收起 */
-        $subnav.on("click", "h3", function () {
+        subnav.on("click", "h3", function () {
             var $this = $(this);
             $this.find(".icon").toggleClass("icon-fold");
             $this.next().slideToggle("fast").siblings(".side-sub-menu:visible").prev("h3").find("i").addClass("icon-fold").end().end().hide();
         });
-        $subnav.find("h3 a").click(function (e) {
+        subnav.find("h3 a").click(function (e) {
             e.stopPropagation();
         });
 
@@ -158,22 +160,21 @@
 
         // 导航栏超出窗口高度后的模拟滚动条
         var sHeight = $(".sidebar").height();
-        var subHeight = subnavs.height();
+        var subHeight = subnav.height();
         var diff = subHeight - sHeight; //250
-        var sub = subnavs;
         if (diff > 0) {
             $(window).mousewheel(function (event, delta) {
                 if (delta > 0) {
-                    if (parseInt(sub.css('marginTop')) > -10) {
-                        sub.css('marginTop', '0px');
+                    if (parseInt(subnav.css('marginTop')) > -10) {
+                        subnav.css('marginTop', '0px');
                     } else {
-                        sub.css('marginTop', '+=' + 10);
+                        subnav.css('marginTop', '+=' + 10);
                     }
                 } else {
-                    if (parseInt(sub.css('marginTop')) < '-' + (diff - 10)) {
-                        sub.css('marginTop', '-' + (diff - 10));
+                    if (parseInt(subnav.css('marginTop')) < '-' + (diff - 10)) {
+                        subnav.css('marginTop', '-' + (diff - 10));
                     } else {
-                        sub.css('marginTop', '-=' + 10);
+                        subnav.css('marginTop', '-=' + 10);
                     }
                 }
             });
