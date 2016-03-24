@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {block name="meta_title"}OneThink管理平台{/block}
+    </title>
+    <link href="{$smarty.const.PUBLIC_URI}/Public/favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.CSS_URI}/base.css" media="all">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.CSS_URI}/common.css" media="all">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.CSS_URI}/module.css">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.CSS_URI}/style.css" media="all">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.CSS_URI}/{$style}.css" media="all">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-1.10.2.min.js"></script>
+    <![endif]--><!--[if gte IE 9]><!-->
+    <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="{$smarty.const.JS_URI}/jquery.mousewheel.js"></script>
+    <!--<![endif]-->
+    {block name="style"}{/block}
+</head>
+<body>
+<!-- 头部 -->
+<div class="header">
+    <!-- Logo -->
+    <span class="logo" style="background: url({$uri.logo}) no-repeat 0 -45px;"></span>
+    <!-- /Logo -->
+
+    <!-- 主导航 -->
+    <ul class="main-nav">
+        {foreach $menu_list as $menu}
+        {* menu.class 可以使用''或者'current' *}
+        <li class="{$menu.class}"><a href="{$menu.url}">{$menu.title}</a></li>
+        {/foreach}
+    </ul>
+    <!-- /主导航 -->
+    <!-- 用户栏 -->
+    <div class="user-bar">
+        <a href="javascript:void(0);" class="user-entrance"><i class="icon-user"></i></a>
+        <ul class="nav-list user-menu hidden">
+            {* em 标签告诉浏览器这段文字为强调的内容 *}
+            <li class="manager">你好，<em title="username">this is username !</em></li>
+            <li><a href="{$uri.update_password}">修改密码</a></li>
+            <li><a href="{$uri.update_nickname}">修改昵称</a></li>
+            <li><a href="{$uri.logout}">退出</a></li>
+        </ul>
+    </div>
+</div>
+<!-- /头部 -->
+<!-- 边栏 -->
+<div class="sidebar">
+    <!-- 子导航 -->
+    {block name="sidebar"}
+    <div id="subnav" class="subnav">
+        {foreach $subnav as $menu}
+        <h3><i class="icon icon-unfold"></i>{$menu.name}</h3>
+        <ul class="side-sub-menu">
+            {foreach $menu.submenus as $key=>$submenu}
+            <li><a class="item" href="{$submenu.url}">
+                {* $submenu|var_export:true *}
+                {$submenu.title}</a></li>
+            {/foreach}
+        </ul>
+        {/foreach}
+    </div>
+    {/block}
+    <!-- /子导航 -->
+</div>
+<!-- /边栏 -->
+
+{* 内容区 BEGIN *}
+<div id="main-content">
+    <div id="top-alert" class="fixed alert alert-error" style="display: none;">
+        <button class="close fixed" style="margin-top: 4px;">&times;</button>
+        <div class="alert-content">这是内容</div>
+    </div>
+    <div id="main" class="main">
+
+        {* 位置栏 BEGIN *}
+        {block name="nav"}
+        {/block}
+        {* 位置栏 END *}
+
+        {* 内容体区 BEGIN *}
+        {block name="body"}{/block}
+        {* 内容体区 END *}
+    </div>
+    <div class="cont-ft">
+        <div class="copyright">
+            <div class="fl">{$copyright.fl}</div>
+            <div class="fr">{$copyright.fr}</div>
+        </div>
+    </div>
+</div>
+{* 内容区 END *}
+
+<script>
+    (function () {
+        var ThinkPHP = window.Think = {
+            "ROOT": "{$smarty.const.BASE_URI}", //当前网站地址
+            "PUBLIC": "{$smarty.const.PUBLIC_URI}" //项目公共目录地址
+        }
+    })();
+</script>
+<script type="text/javascript" src="{$smarty.const.STATIC_URI}/think.js"></script>
+<script type="text/javascript" src="{$smarty.const.JS_URI}/common.js"></script>
+<script type="text/javascript">
+    (function () {
+        /******** 头部管理员菜单 **************/
+        var userbar = $("div.user-bar");
+        userbar.mouseenter(function () {
+            var userMenu = $(this).children(".user-menu");
+            userMenu.removeClass("hidden");
+            clearTimeout(userMenu.data("timeout"));//无返回值
+        }).mouseleave(function () {
+            var userMenu = $(this).children(".user-menu");
+            userMenu.data("timeout") && clearTimeout(userMenu.data("timeout"));//如果之前设置了定时器，则清除定时
+            userMenu.data("timeout", setTimeout(function(){ userMenu.addClass("hidden");}, 100));//setTimeout返回延时时间
+        });
+
+
+        /******** 左侧子菜单菜单 **************/
+        var subnavs = $(".subnav");
+
+        var $window = $(window), $subnav = $("#subnav"), url;
+        $window.resize(function () {
+            $("#main").css("min-height", $window.height() - 130);
+        }).resize();
+
+        /* 左边菜单高亮 */
+        url = window.location.pathname + window.location.search;
+        url = url.replace(/(\/(p)\/\d+)|(&p=\d+)|(\/(id)\/\d+)|(&id=\d+)|(\/(group)\/\d+)|(&group=\d+)/, "");
+        $subnav.find("a[href='" + url + "']").parent().addClass("current");
+
+        /* 左边菜单显示收起 */
+        $subnav.on("click", "h3", function () {
+            var $this = $(this);
+            $this.find(".icon").toggleClass("icon-fold");
+            $this.next().slideToggle("fast").siblings(".side-sub-menu:visible").prev("h3").find("i").addClass("icon-fold").end().end().hide();
+        });
+        $subnav.find("h3 a").click(function (e) {
+            e.stopPropagation();
+        });
+
+
+        /* 表单获取焦点变色 */
+        var form = $("form");
+        form.on("focus", "input", function () {
+            $(this).addClass('focus');
+        }).on("blur", "input", function () {
+            $(this).removeClass('focus');
+        });
+        form.on("focus", "textarea", function () {
+            $(this).closest('label').addClass('focus');
+        }).on("blur", "textarea", function () {
+            $(this).closest('label').removeClass('focus');
+        });
+
+        // 导航栏超出窗口高度后的模拟滚动条
+        var sHeight = $(".sidebar").height();
+        var subHeight = subnavs.height();
+        var diff = subHeight - sHeight; //250
+        var sub = subnavs;
+        if (diff > 0) {
+            $(window).mousewheel(function (event, delta) {
+                if (delta > 0) {
+                    if (parseInt(sub.css('marginTop')) > -10) {
+                        sub.css('marginTop', '0px');
+                    } else {
+                        sub.css('marginTop', '+=' + 10);
+                    }
+                } else {
+                    if (parseInt(sub.css('marginTop')) < '-' + (diff - 10)) {
+                        sub.css('marginTop', '-' + (diff - 10));
+                    } else {
+                        sub.css('marginTop', '-=' + 10);
+                    }
+                }
+            });
+        }
+    })();
+</script>
+{block name="script"}{/block}
+</body>
+</html>
