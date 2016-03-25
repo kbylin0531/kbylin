@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title> {block name="meta_title"}OneThink{/block} </title>
-    <link href="{$smarty.const.PUBLIC_URI}/Public/favicon.ico" type="image/x-icon" rel="shortcut icon">
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}/css/base.css" media="all">{* 基础样式 *}
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}/css/common.css" media="all">
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}/css/module.css">
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}/css/style.css" media="all">
-    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}/css/{$style}.css" media="all"> {* 主题样式 *}
+    <link href="{$smarty.const.PUBLIC_URI}/favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}css/base.css" media="all">{* 基础样式 *}
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}css/common.css" media="all">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}css/module.css">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}css/style.css" media="all">
+    <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}css/{$style}.css" media="all"> {* 主题样式 *}
     <!--[if lt IE 9]>
     <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-1.10.2.min.js"></script>
     <![endif]-->
     <!--[if gte IE 9]><!-->
     <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-2.0.3.min.js"></script>
-    <script type="text/javascript" src="{$smarty.const.ADMIN_URI}/js/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="{$smarty.const.ADMIN_URI}js/jquery.mousewheel.js"></script>
     <!--<![endif]-->
     {block name="style"}{/block}
 </head>
@@ -27,10 +27,10 @@
         {* LOGO END *}
 
         {* 主导航 BEGIN *}
-            <ul class="main-nav">
+            <ul class="main-nav" id="main-nav">
                 {foreach $menu_list as $menu}
                 {* menu.class 可以使用''或者'current' *}
-                <li class="{$menu.class}"><a href="{$menu.url}">{$menu.title}</a></li>
+                <li class=""><a href="{$menu.url}">{$menu.title}</a></li>
                 {/foreach}
             </ul>
         {* 主导航 END *}
@@ -103,8 +103,7 @@
     {* 内容区 END *}
 </body>
 
-<script type="text/javascript" src="{$smarty.const.ADMIN_URI}/js/basic.js"></script>
-<script type="text/javascript" src="{$smarty.const.ADMIN_URI}/js/common.js"></script>
+<script type="text/javascript" src="{$smarty.const.ADMIN_URI}js/basic.js"></script>
 {block name="script"}{/block}
 
 </html>
