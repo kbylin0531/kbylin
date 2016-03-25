@@ -215,6 +215,14 @@ $(function () {
         }
     }
 
+
+
+
+
+
+
+
+
     //全选的实现
     $(".check-all").click(function(){
         $(".ids").prop("checked", this.checked);

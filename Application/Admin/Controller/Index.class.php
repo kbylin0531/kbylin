@@ -2,15 +2,12 @@
 /**
  * Created by PhpStorm.
  * User: linzh_000
- * Date: 2016/3/24
- * Time: 11:16
+ * Date: 2016/3/25
+ * Time: 16:52
  */
 namespace Application\Admin\Controller;
-use Application\Admin\General;
-use System\Core\Router;
 
-class Config extends General{
-
+class Index {
 
     public function index(){echo __METHOD__;}
     public function index1(){echo __METHOD__;}
@@ -22,16 +19,5 @@ class Config extends General{
     public function index7(){echo __METHOD__;}
     public function index8(){echo __METHOD__;}
     public function index9(){echo __METHOD__;}
-
-
-    public function group($id=0){
-        $configModel = new \Application\Admin\Model\Config();
-        $conf_group_list = $configModel->getConfigGroupList($id);
-
-
-//        $this->display();
-    }
-
-
 
 }
