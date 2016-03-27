@@ -77,7 +77,7 @@ class Model {
      * @return Dao
      */
     public function getDao(array $config=null){
-        isset($this->dao) and $this->_dao = Dao::getInstance($config);
+        isset($this->dao) and $this->_dao = Dao::getDriverInstance($config);
         return $this->_dao;
     }
 

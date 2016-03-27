@@ -81,7 +81,7 @@ class Log{
      * @Exception FileWriteFailedException
      */
     public static function write($content,$level=self::LOG_LEVEL_DEBUG){
-        return self::getInstance()->write(self::fetchLogUID($level),$content);
+        return self::getDriverInstance()->write(self::fetchLogUID($level),$content);
     }
 
     /**
@@ -92,7 +92,7 @@ class Log{
      * @return string|array 如果按小时写入，则返回数组
      */
     public static function read($datetime, $level=self::LOG_LEVEL_DEBUG){
-        return self::getInstance()->read(self::fetchLogUID($level,$datetime));
+        return self::getDriverInstance()->read(self::fetchLogUID($level,$datetime));
     }
 
     /**

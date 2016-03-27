@@ -112,7 +112,7 @@ class Router {
      * @return array 返回解析结果
      */
     public static function parse($uri,$hostname){
-        self::getInstance('parser')->parse($uri,$hostname)
+        self::getDriverInstance('parser')->parse($uri,$hostname)
             ->fetchModules(self::$access_modules)
             ->fetchController(self::$access_controller)
             ->fetchAction(self::$access_action)
@@ -133,8 +133,8 @@ class Router {
      * @param array $params
      * @return string
      */
-    public static function create($modules,$controller,$action,array $params=null){
-        return self::getInstance('creater')->create($modules,$controller,$action,$params);
+    public static function create($modules=null,$controller=null,$action=null,array $params=null){
+        return self::getDriverInstance('creater')->create($modules,$controller,$action,$params);
     }
 
     /**

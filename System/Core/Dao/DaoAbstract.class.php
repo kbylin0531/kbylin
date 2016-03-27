@@ -16,16 +16,6 @@ use System\Core\BylinException;
 abstract class DaoAbstract extends PDO {
 
     /**
-     * 保留字段转义字符
-     * mysql中是 ``
-     * sqlserver中是 []
-     * oracle中是 ""
-     * @var string
-     */
-    protected $_l_quote = null;
-    protected $_r_quote = null;
-
-    /**
      * PDO驱动器名称
      * @var string
      */
@@ -47,9 +37,11 @@ abstract class DaoAbstract extends PDO {
      * @throws BylinException 未设置
      */
     public function __construct(array $config){
-        parent::__construct($this->buildDSN($config),$config['username'],$config['password'],$config['options']);
-        if(null === $this->_l_quote) throw new BylinException('该数据库驱动未设置左转义符');
-        if(null === $this->_r_quote) throw new BylinException('该数据库驱动未设置右转义符');
+        try {
+            parent::__construct($this->buildDSN($config),$config['username'],$config['password'],$config['options']);
+        } catch(\PDOException $e){
+            throw new BylinException('链接失败:'.var_export($config,true));
+        }
     }
 
 
@@ -67,6 +59,11 @@ abstract class DaoAbstract extends PDO {
 
     /**
      * 转义保留字字段名称
+     *
+     * 注:
+     *  mysql中是 ``
+     *  sqlserver中是 []
+     *  oracle中是 ""
      * @param string $fieldname 字段名称
      * @return string
      */

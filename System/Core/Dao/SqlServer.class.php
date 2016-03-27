@@ -32,7 +32,16 @@ class SQLServer extends DaoAbstract {
      * @param array $config 数据库连接配置
      * @return string
      */
-    public function buildDSN(array $config){}
+    public function buildDSN(array $config){
+        $dsn  =   'sqlsrv:Server='.$config['hostname'];
+        if(isset($config['dbname'])){
+            $dsn = ";Database={$config['dbname']}";
+        }
+        if(!empty($config['hostport'])) {
+            $dsn  .= ','.$config['hostport'];
+        }
+        return $dsn;
+    }
 
     /**
      * 编译组件成适应当前数据库的SQL字符串

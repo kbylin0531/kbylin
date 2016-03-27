@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}css/style.css" media="all">
     <link rel="stylesheet" type="text/css" href="{$smarty.const.ADMIN_URI}css/{$style}.css" media="all"> {* 主题样式 *}
     <!--[if lt IE 9]>
-    <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-1.12.0.min.js"></script>
     <![endif]-->
     <!--[if gte IE 9]><!-->
     <script type="text/javascript" src="{$smarty.const.STATIC_URI}/jquery-2.0.3.min.js"></script>
@@ -83,7 +83,12 @@
         {* 主体 BEGIN *}
             <div id="main" class="main">
                 {* 位置栏 BEGIN *}
-                    {block name="nav"}{/block}
+                <!--<div class="breadcrumb">-->
+                    <!--<span>您的位置:</span>-->
+                    <!--<span>{ $v}</span>-->
+                    <!--<span><a href="{ $k}">{ $v}</a>&gt;</span>-->
+                <!--</div>-->
+                {block name="nav"}{/block}
                 {* 位置栏 END *}
                 {* 内容体区 BEGIN *}
                     {block name="body"}{/block}

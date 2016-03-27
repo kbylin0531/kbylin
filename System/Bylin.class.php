@@ -14,6 +14,19 @@ use System\Core\Dispatcher;
 const AJAX_JSON = 0;
 const AJAX_XML = 1;
 
+/**
+ * PHP变量类型
+ */
+const TYPE_BOOL     = 'boolean';
+const TYPE_INT      = 'integer';
+const TYPE_FLOAT    = 'double';//由于历史原因，如果是 float 则返回“double”，而不是“float”
+const TYPE_STR      = 'string';
+const TYPE_ARRAY    = 'array';
+const TYPE_OBJ      = 'object';
+const TYPE_RESOURCE = 'resource';
+const TYPE_NULL     = 'NULL';
+const TYPE_UNKNOWN  = 'unknown type';
+
 date_default_timezone_set('Asia/Shanghai'); //避免使用date函数时的警告
 defined('DEBUG_MODE_ON') or define('DEBUG_MODE_ON', true); //是否开启DUBUG模式
 defined('PAGE_TRACE_ON') or define('PAGE_TRACE_ON', true); //是否开启TRACE界面
@@ -180,9 +193,20 @@ class Bylin {
         $hostname = Network::getHostname();
         $result = Router::parse($uri,$hostname);
 
+//        dumpout(
+//            Router::create(),                                 '/cms/index.php/'
+//            Router::create($result[0]),                       '/cms/index.php/Admin'
+//            Router::create($result[0],$result[1]),            '/cms/index.php/Admin/User'
+//            Router::create($result[0],$result[1],$result[2])  '/cms/index.php/Admin/User/index3'
+//            );
+        define('__APP__',Router::create());
+        define('__MODULE__',Router::create($result[0]));
+        define('__CONTROLLER__',Router::create($result[0],$result[1]));
+        define('__ACTION__',Router::create($result[0],$result[1],$result[2]));
+
         Dispatcher::execute($result[0],$result[1],$result[2],$result[3]);
 
-//        dumpout($uri,$hostname,$result,$return);
+
     }
 
     public function test(){
@@ -196,7 +220,7 @@ class Bylin {
      */
     public function _onShutDown(){
         self::recordStatus("_xor_exec_shutdown");
-        if(DEBUG_MODE_ON and PAGE_TRACE_ON) self::showTrace(6);//页面跟踪信息显示
+        if(DEBUG_MODE_ON and PAGE_TRACE_ON and !IS_AJAX) self::showTrace(6);//页面跟踪信息显示
         if($this->_liteon and !is_file(LITE_FILE_NAME)){ //开启加载 并且Lite文件不存在时  ==> 重新生成
             self::recordStatus('create_lite_begin');
             Storage::write(LITE_FILE_NAME,LiteBuilder::compileInBatch($this->_classes));

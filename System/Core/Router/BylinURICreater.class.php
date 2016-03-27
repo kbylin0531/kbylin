@@ -90,7 +90,7 @@ class BylinURICreater implements URICreaterInterface {
      * @param array|null $params 参数
      * @return string 可以访问的URI
      */
-    public function create($modules,$contler,$action,array $params=null){
+    public function create($modules=null,$contler=null,$action=null,array $params=null){
         if($this->convention['API_MODE_ON']){
             $uri = Network::getBasicUrl().$this->createInAPI($modules,$contler,$action,$params);
         }else{

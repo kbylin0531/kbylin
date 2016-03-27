@@ -32,7 +32,13 @@ class OCI extends DaoAbstract {
      * @param array $config 数据库连接配置
      * @return string
      */
-    public function buildDSN(array $config){}
+    public function buildDSN(array $config){
+        $dsn  =   'oci:dbname=//'.$config['hostname'].($config['port']?':'.$config['port']:'').'/'.$config['dbname'];
+        if(!empty($config['charset'])) {
+            $dsn  .= ';charset='.$config['charset'];
+        }
+        return $dsn;
+    }
 
     /**
      * 编译组件成适应当前数据库的SQL字符串

@@ -5,9 +5,8 @@
  * Date: 2016/2/1
  * Time: 16:23
  */
-namespace System\Core\Model;
+namespace System\Core;
 use PDO;
-use System\Core\BylinException;
 use System\Core\Dao\DaoAbstract;
 use System\Core\Dao\MySQL;
 use System\Core\Model\Dao\OCI;
@@ -25,7 +24,6 @@ use System\Traits\Crux;
  * @package System\Core
  */
 class Dao {
-
     use Crux;
 
     const CONF_NAME = 'dao';
@@ -88,6 +86,11 @@ class Dao {
             ],
         ],
     ];
+    /**
+     * 自身实例
+     * @var Dao
+     */
+    protected static $_instance = null;
 
     /**
      * @var DaoAbstract
@@ -107,19 +110,30 @@ class Dao {
 
     /**
      * 获取所有可用的数据库PDO驱动
-     * @return array
+     * 如：'mysql'或者'odbc'
+     * @return array 如"['mysql','odbc',]"
      */
     public static function getAvailableDrivers(){
         return PDO::getAvailableDrivers();
     }
 
+    /**
+     * 获取Dao实例
+     * @param int|string|array $index int或者
+     * @return Dao
+     */
+    public static function getInstance($index=null){
+        null === self::$_instance or self::$_instance = new Dao($index);
+        return self::$_instance;
+    }
 
     /**
      * Dao constructor.
-     * @param array|null $config
+     * @param array|int|string|null $index
      */
-    public function __construct(array $config=null){
+    protected function __construct(array $index=null){
         self::checkInitialized(true);
+        $this->driver = self::getDriverInstance($index);
     }
 
     /*TODO:基本的查询功能 ***************************************************************************************/

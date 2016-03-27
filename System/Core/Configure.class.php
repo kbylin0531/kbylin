@@ -42,7 +42,7 @@ class Configure{
         self::$_confcache = [];
         self::checkInitialized(true);
         $thisconvention = self::getConventions();
-        $instance = self::getInstance();
+        $instance = self::getDriverInstance();
         //无法读取驱动内部的缓存或者缓存不存在  => 重新读取配置并生成缓存
         foreach($thisconvention['GLOBAL_CONF_LIST'] as $item){
             self::$_confcache[$item] = $instance->read($item);
@@ -62,7 +62,7 @@ class Configure{
             self::$_confcache = $cachedata;
         }else{
             self::checkInitialized(true);
-            $instance = self::getInstance();
+            $instance = self::getDriverInstance();
             //加载驱动内置的缓存
             $cachedata  = $instance->loadCache();
             if(null === (self::$_confcache = $cachedata)){
@@ -80,7 +80,7 @@ class Configure{
      * @return bool 写入成功与否
      */
     public static function writeCustomConfig($itemname,array $config,$expire=null){
-        return self::getInstance()->write($itemname,$config,$expire);
+        return self::getDriverInstance()->write($itemname,$config,$expire);
     }
 
     /**
@@ -99,7 +99,7 @@ class Configure{
      * @return array|mixed 配置项存在的情况下返回array，否则返回参数$replacement的值
      */
     public static function readGlobalConfig($itemname,$replacement=null){
-        $value = self::getInstance()->read($itemname);
+        $value = self::getDriverInstance()->read($itemname);
         return null === $value?$replacement:$value;
     }
 

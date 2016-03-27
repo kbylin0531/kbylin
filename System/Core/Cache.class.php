@@ -99,7 +99,7 @@ class Cache{
      */
     public static function get($name,$replacement=null){
         ++ self::$readTimes;
-        $result = self::getInstance(self::$index)->get($name);
+        $result = self::getDriverInstance(self::$index)->get($name);
         return $result === null ? $replacement : $result;
     }
 
@@ -113,7 +113,7 @@ class Cache{
      */
     public static function set($name, $value, $expire = null){
         ++ self::$writeTimes;
-        return self::getInstance(self::$index)->set($name, $value, $expire);
+        return self::getDriverInstance(self::$index)->set($name, $value, $expire);
     }
 
     /**
@@ -124,7 +124,7 @@ class Cache{
      */
     public static function rm($name){
         ++ self::$writeTimes;
-        return self::getInstance(self::$index)->rm($name);
+        return self::getDriverInstance(self::$index)->rm($name);
     }
 
     /**
@@ -135,7 +135,7 @@ class Cache{
      */
     public static function clear($name=null){
         ++ self::$writeTimes;
-        return self::getInstance(self::$index)->clear($name);
+        return self::getDriverInstance(self::$index)->clear($name);
     }
 
 }

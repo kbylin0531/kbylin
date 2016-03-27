@@ -41,15 +41,15 @@ class Asus extends Z{
 /**
  * 自动调用
  */
-//$a = Acer::getInstance(0,[
+//$a = Acer::getDriverInstance(0,[
 //    'DRIVER_CLASS_LIST' => [Acer::class]
 //]);
-//$b = Asus::getInstance(0,[
+//$b = Asus::getDriverInstance(0,[
 //    'DRIVER_CLASS_LIST' => [Asus::class]
 //]);
 
-$a = Acer::getInstance();
-$b = Asus::getInstance();
+$a = Acer::getDriverInstance();
+$b = Asus::getDriverInstance();
 
 
 //打印一样的结果

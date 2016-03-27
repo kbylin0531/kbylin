@@ -16,7 +16,8 @@ return [
     'DRIVER_CONFIG_LIST' => [
         [
             'type'      => 'Mysql',//数据库类型
-            'dbname'    => 'bylincms',//选择的数据库
+//            'dbname'    => 'bylincms',//选择的数据库
+            'dbname'    => 'onethink',
             'username'  => 'lin',
             'password'  => '123456',
             'host'      => '192.168.200.170',

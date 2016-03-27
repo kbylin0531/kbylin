@@ -34,7 +34,7 @@ class Storage {
      * @return string|false 文件不存在时返回false
      */
     public static function read($filepath,$file_encoding='UTF-8',$output_encode='UTF-8'){
-        return self::getInstance()->read($filepath,$file_encoding,$output_encode);
+        return self::getDriverInstance()->read($filepath,$file_encoding,$output_encode);
     }
 
     /**
@@ -45,7 +45,7 @@ class Storage {
      * @return int 返回写入的字节数目,失败时抛出异常
      */
     public static function write($filepath,$content,$write_encode='UTF-8'){
-        return self::getInstance()->write($filepath,$content,$write_encode);
+        return self::getDriverInstance()->write($filepath,$content,$write_encode);
     }
 
     /**
@@ -57,7 +57,7 @@ class Storage {
      * @return string 返回写入内容
      */
     public static function append($filename,$content,$write_encode='UTF-8'){
-        return self::getInstance()->append($filename,$content,$write_encode);
+        return self::getDriverInstance()->append($filename,$content,$write_encode);
     }
 
     /**
@@ -67,7 +67,7 @@ class Storage {
      * @return boolean
      */
     public static function has($filename){
-        return self::getInstance()->has($filename);
+        return self::getDriverInstance()->has($filename);
     }
 
 
@@ -78,7 +78,7 @@ class Storage {
      * @return boolean
      */
     public static function unlink($filename){
-        return self::getInstance()->unlink($filename);
+        return self::getDriverInstance()->unlink($filename);
     }
 
     /**
@@ -89,7 +89,7 @@ class Storage {
      * @return array|mixed
      */
     public static function filemtime($filename){
-        return self::getInstance()->filemtime($filename);
+        return self::getDriverInstance()->filemtime($filename);
     }
 
     /**
@@ -98,7 +98,7 @@ class Storage {
      * @return mixed
      */
     public static function filesize($filename){
-        return self::getInstance()->filesize($filename);
+        return self::getDriverInstance()->filesize($filename);
     }
 
     /**
@@ -108,7 +108,7 @@ class Storage {
      * @return bool true成功删除，false删除失败
      */
     public static function removeFolder($dir,$recursion=false) {
-        return self::getInstance()->removeFolder($dir,$recursion);
+        return self::getDriverInstance()->removeFolder($dir,$recursion);
     }
 
     /**
@@ -119,7 +119,7 @@ class Storage {
      * @return bool
      */
     public static function makeFolder($fullpath,$auth = 0755){
-        return self::getInstance()->makeFolder($fullpath,$auth);
+        return self::getDriverInstance()->makeFolder($fullpath,$auth);
     }
     /**
      * 读取文件夹内容，并返回一个数组(不包含'.'和'..')
@@ -131,7 +131,7 @@ class Storage {
      * @return array
      */
     public static function readFolder($dir){
-        return self::getInstance()->readFolder($dir);
+        return self::getDriverInstance()->readFolder($dir);
     }
 
 }

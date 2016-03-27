@@ -125,12 +125,12 @@ trait Crux {
 
     /**
      * 获取本例示例
-     * @param int $index
+     * @param int|string $index
      * @param mixed $conf 详细说明参考
      * @return mixed
      * @throws BylinException
      */
-    public static function getInstance($index=null,$conf=null){
+    public static function getDriverInstance($index=null,$conf=null){
         //检查初始化情况
         isset(static::$_conventions[static::class]) or static::initialize($conf);
 

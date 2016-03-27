@@ -55,7 +55,7 @@ class View {
      * @return void
      */
     public static function assign($tpl_var,$value=null,$nocache=false){
-        $instance = self::getInstance();
+        $instance = self::getDriverInstance();
         if(is_array($tpl_var) and $tpl_var){
             foreach($tpl_var as $key => $value){
                 $instance->assign($key,$value[0],$value[1]);
@@ -77,7 +77,7 @@ class View {
     public static function display(array $context, $cache_id = null, $compile_id = null,$parent = null){
         self::checkInitialized(true);
         $template = self::fetchTemplatePath($context);
-        self::getInstance()->setContext($context)->display($template,$cache_id,$compile_id,$parent);
+        self::getDriverInstance()->setContext($context)->display($template,$cache_id,$compile_id,$parent);
     }
 
     /**

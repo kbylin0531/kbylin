@@ -62,7 +62,7 @@ class Cache{
      * @return mixed
      */
     public static function get($name){
-        return self::getInstance()->get($name);
+        return self::getDriverInstance()->get($name);
     }
 
     /**
@@ -74,7 +74,7 @@ class Cache{
      * @return bool
      */
     public static function set($name, $value, $expire = null){
-        return self::getInstance()->set($name, $value, $expire);
+        return self::getDriverInstance()->set($name, $value, $expire);
     }
 
     /**
@@ -84,7 +84,7 @@ class Cache{
      * @return bool|\string[]
      */
     public static function rm($name){
-        return self::getInstance()->rm($name);
+        return self::getDriverInstance()->rm($name);
     }
 
     /**
@@ -93,7 +93,7 @@ class Cache{
      * @return bool
      */
     public static function clear(){
-        return self::getInstance()->clear();
+        return self::getDriverInstance()->clear();
     }
 
 }

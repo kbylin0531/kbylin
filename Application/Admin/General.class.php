@@ -16,6 +16,8 @@ class General {
     public function __construct(){
         defined('ADMIN_URI') or define('ADMIN_URI',PUBLIC_URI.'Admin/');
         defined('STATIC_URI') or define('STATIC_URI',PUBLIC_URI.'static/');
+        defined('ASSETS_URI') or define('ASSETS_URI',PUBLIC_URI.'assets/');
+
 
 
         $classname = static::class;
