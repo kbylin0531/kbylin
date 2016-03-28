@@ -20,9 +20,9 @@ class DaoTest {
         $this->dao = Dao::getInstance();
 //        dump(Dao::getAvailableDrivers());
 
-        $rst = $this->testBaiscQuery();
-        $rst = $this->testBaiscErrorQuery() === false and $rst = $this->dao->getErrorInfo();
-//        $rst = $this->testComplexQuery();
+//        $rst = $this->testBaiscQuery();
+//        ($rst = $this->testBaiscErrorQuery()) === false and  $rst = $this->dao->getError();
+        $rst = $this->testComplexQuery();
         dump($rst);
     }
 

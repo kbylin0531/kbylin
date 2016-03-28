@@ -149,30 +149,34 @@ class Dao {
      */
     public function query($sql,array $inputs=null){
         if(null === $inputs){
-            try {
-                $statement = $this->driver->query($sql);//返回PDOstatement,失败时返回false
-                if(false === $statement){
-                    //返回false时表示出错
-                    $error = $statement->errorInfo();
-                    $this->error = "{$error[0]}{$error[1]}{$error[2]}";
-                    return false;
-                }else{
+            //直接使用PDO的查询功能
+            try{
+                $statement = $this->driver->query($sql);//返回PDOstatement,失败时返回false(或者抛出异常)，视错误的处理方式而定
+                if(false !== $statement){
                     //query成功时返回PDOStatement对象
                     return $statement->fetchAll();
-                }
-            }catch(\PDOException $e){/* SQL出错 */}
-        }else{
-            try{
-                $statement = $this->driver->prepare($sql);//返回错误或者抛出异常视PDO::ERRMODE_EXCEPTION设置情况而定
-                if(false !== $statement){
-                    return false === $statement->execute($inputs)?false:$statement->fetchAll();
+                }else{
+                    $this->setPdoError();
+                    return false;
                 }
             }catch(\PDOException $e){
-                //prepare失败
+                $this->setPdoError($e->getMessage());
+                return false;
             }
+        }else{
+            $statement = null;
+            try {
+                //简介调用PDOStatement的查询功能
+                $statement = $this->driver->prepare($sql);
+                if(false !== $statement and false !== $statement->execute($inputs)){
+                    return $statement->fetchAll();
+                }
+            }catch(\PDOException $e){
+                /* prepare可能失败,返回错误或者抛出异常视PDO::ERRMODE_EXCEPTION设置情况而定 */
+                $this->setPdoStatementError($e->getMessage());
+            }
+            return false;
         }
-        $this->error = $this->getPdoErrorInfo();
-        return false;
     }
     /**
      * 简单地执行Insert、Delete、Update操作
@@ -185,7 +189,7 @@ class Dao {
         try{
             $rst = $this->driver->exec($sql);
             if(false === $rst){
-                $this->error = $this->getPdoErrorInfo();
+                $this->error = $this->getPdoError();
                 return false;
             }
             return $rst;
@@ -228,7 +232,7 @@ class Dao {
 
         //出错时设置错误信息，注：PDOStatement::execute返回bool类型的结果
         if(false === $this->curStatement->execute($input_parameters)){
-            $this->error = $this->getStatementErrorInfo();
+            $this->setPdoStatementError($this->curStatement);
             return false;
         }
         return true;
@@ -437,7 +441,7 @@ class Dao {
      * @return bool 返回true表示发生了错误并成功设置错误信息，返回false表示模块未捕捉到错误
      */
     protected function setPdoError($errorInfo=null) {
-        null === $errorInfo and $errorInfo = $this->getPdoErrorInfo();
+        null === $errorInfo and $errorInfo = $this->getPdoError();
         return ($this->error = $errorInfo)===null?false:true;
     }
 
@@ -445,7 +449,7 @@ class Dao {
      * 获取PDO对象查询时发生的错误
      * @return string
      */
-    public function getPdoErrorInfo(){
+    public function getPdoError(){
         $pdoError = $this->driver->errorInfo();
         return isset($pdoError[0])?
             "Code:{$pdoError[0]} >>> [{$pdoError[1]}]:[{$pdoError[2]}]":null;
@@ -455,10 +459,15 @@ class Dao {
      * @param PDOStatement|null $statement
      * @return string
      */
-    public function getStatementErrorInfo(PDOStatement $statement=null){
+    public function getStatementError(PDOStatement $statement=null){
         null === $statement and $statement = $this->curStatement;
         $stmtError = $statement->errorInfo();
         return isset($stmtError[1])?"[{$stmtError[1]}]:[{$stmtError[2]}]":'';
+    }
+
+    public function setPdoStatementError($errorString=null){
+        null === $errorString and $errorString = $this->getStatementError();
+        return ($this->error = $errorString)===null?false:true;
     }
 
 
