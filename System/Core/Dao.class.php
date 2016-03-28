@@ -12,6 +12,7 @@ use System\Core\Dao\MySQL;
 use System\Core\Model\Dao\OCI;
 use System\Core\Model\Dao\SQLServer;
 use System\Traits\Crux;
+use PDOStatement;
 
 /**
  * Class Dao 数据入口对象(Data Access Object)
@@ -123,7 +124,7 @@ class Dao {
      * @return Dao
      */
     public static function getInstance($index=null){
-        null === self::$_instance or self::$_instance = new Dao($index);
+        self::$_instance = new Dao($index);
         return self::$_instance;
     }
 
@@ -140,19 +141,38 @@ class Dao {
 
     /**
      * 简单地查询一段SQL，并且将解析出所有的结果集合
-     * @param string $sql
-     * @return array|false
+     * @param string $sql 查询的SQL
+     * @param array|null $inputs 输入参数
+     *                          如果输入参数未设置或者为null（显示声明），则直接查询
+     *                          如果输入参数为非空数组，则使用PDOStatement对象查询
+     * @return array|false 返回结果集数组，返回false表示查询出错
      */
-    public function query($sql){
-        $rst = $this->driver->query($sql);
-        if(false === $rst){
-            //返回false时表示出错
-            $this->error = $this->getPdoErrorInfo();
-            return false;
+    public function query($sql,array $inputs=null){
+        if(null === $inputs){
+            try {
+                $statement = $this->driver->query($sql);//返回PDOstatement,失败时返回false
+                if(false === $statement){
+                    //返回false时表示出错
+                    $error = $statement->errorInfo();
+                    $this->error = "{$error[0]}{$error[1]}{$error[2]}";
+                    return false;
+                }else{
+                    //query成功时返回PDOStatement对象
+                    return $statement->fetchAll();
+                }
+            }catch(\PDOException $e){/* SQL出错 */}
         }else{
-            //query成功时返回PDOStatement对象
-            return $rst->fetchAll();
+            try{
+                $statement = $this->driver->prepare($sql);//返回错误或者抛出异常视PDO::ERRMODE_EXCEPTION设置情况而定
+                if(false !== $statement){
+                    return false === $statement->execute($inputs)?false:$statement->fetchAll();
+                }
+            }catch(\PDOException $e){
+                //prepare失败
+            }
         }
+        $this->error = $this->getPdoErrorInfo();
+        return false;
     }
     /**
      * 简单地执行Insert、Delete、Update操作
@@ -392,23 +412,52 @@ class Dao {
      * 返回PDO驱动或者上一个PDO语句对象上发生的错误的信息（具体驱动的错误号和错误信息）
      * @return string 返回错误信息字符串，没有错误发生时返回空字符串
      */
-    public function getErrorInfo(){
+    public function getError(){
         return $this->error;
     }
+
+    /**
+     * 清除错误标记以进行下一次查询
+     * @return void
+     */
+    public function cleanError(){
+        $this->error = null;
+    }
+
+    /**
+     * 设置PDO对象上发生的错误
+     * [
+     *      0   => SQLSTATE error code (a five characters alphanumeric identifier defined in the ANSI SQL standard).
+     *      1   => Driver-specific error code.
+     *      2   => Driver-specific error message.
+     * ]
+     * If the SQLSTATE error code is not set or there is no driver-specific error,
+     * the elements following element 0 will be set to NULL .
+     * @param null|string $errorInfo 设置错误信息，未设置时自动获取
+     * @return bool 返回true表示发生了错误并成功设置错误信息，返回false表示模块未捕捉到错误
+     */
+    protected function setPdoError($errorInfo=null) {
+        null === $errorInfo and $errorInfo = $this->getPdoErrorInfo();
+        return ($this->error = $errorInfo)===null?false:true;
+    }
+
     /**
      * 获取PDO对象查询时发生的错误
      * @return string
      */
     public function getPdoErrorInfo(){
         $pdoError = $this->driver->errorInfo();
-        return isset($pdoError[1])?"Code:{$pdoError[0]} [{$pdoError[1]}]:[{$pdoError[2]}]":'';
+        return isset($pdoError[0])?
+            "Code:{$pdoError[0]} >>> [{$pdoError[1]}]:[{$pdoError[2]}]":null;
     }
     /**
      * 获取PDOStatemnent对象上查询时发生的错误
+     * @param PDOStatement|null $statement
      * @return string
      */
-    public function getStatementErrorInfo(){
-        $stmtError = $this->curStatement->errorInfo();
+    public function getStatementErrorInfo(PDOStatement $statement=null){
+        null === $statement and $statement = $this->curStatement;
+        $stmtError = $statement->errorInfo();
         return isset($stmtError[1])?"[{$stmtError[1]}]:[{$stmtError[2]}]":'';
     }
 

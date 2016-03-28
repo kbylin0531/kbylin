@@ -20,7 +20,7 @@ return [
             'dbname'    => 'onethink',
             'username'  => 'lin',
             'password'  => '123456',
-            'host'      => '192.168.200.170',
+            'host'      => '192.168.200.176',
             'port'      => '3306',
             'charset'   => 'UTF8',
             'dsn'       => null,//默认先检查差DSN是否正确,直接写dsn而不设置其他的参数可以提高效率，也可以避免潜在的bug
