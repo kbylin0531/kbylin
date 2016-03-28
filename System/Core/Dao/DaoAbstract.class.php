@@ -40,7 +40,7 @@ abstract class DaoAbstract extends PDO {
         try {
             parent::__construct($this->buildDSN($config),$config['username'],$config['password'],$config['options']);
         } catch(\PDOException $e){
-            throw new BylinException('链接失败:'.var_export($config,true));
+            throw new BylinException('连接失败!错误:'.$e->getMessage());
         }
     }
 
