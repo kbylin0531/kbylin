@@ -43,12 +43,14 @@ class SQLServer extends DaoAbstract {
         return $dsn;
     }
 
+
     /**
      * 编译组件成适应当前数据库的SQL字符串
      * @param array $components  复杂SQL的组成部分
+     * @param int $actiontype 操作类型
      * @return string
      */
-    public function compile(array $components){
+    public function compile(array $components,$actiontype){
         $components = array(
             'distinct'=>'',
             'top' => '',
@@ -113,4 +115,5 @@ class SQLServer extends DaoAbstract {
         }
         return $sql;
     }
+
 }

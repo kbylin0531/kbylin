@@ -11,6 +11,12 @@ use System\Core\BylinException;
 
 /**
  * Class DaoAbstract Dao
+ *
+ *
+ * 实现的差异：
+ *  ① MySQL的group by在字段未加入聚合函数时会取多条数据的第一条，而SQL Server会提示错误并终止执行
+ *  ② mysql中是 ``, sqlserver中是 [], oracle中是 ""
+ *
  * @package System\Core\Dao
  */
 abstract class DaoAbstract extends PDO {
@@ -78,8 +84,9 @@ abstract class DaoAbstract extends PDO {
     /**
      * 编译组件成适应当前数据库的SQL字符串
      * @param array $components  复杂SQL的组成部分
+     * @param int $actiontype 操作类型
      * @return string
      */
-    abstract public function compile(array $components);
+    abstract public function compile(array $components,$actiontype);
 
 }

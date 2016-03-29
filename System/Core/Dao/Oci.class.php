@@ -12,9 +12,6 @@ class OCI extends DaoAbstract {
 
     /**
      * 保留字段转义字符
-     * mysql中是 ``
-     * sqlserver中是 []
-     * oracle中是 ""
      * @var string
      */
     protected $_l_quote = '"';

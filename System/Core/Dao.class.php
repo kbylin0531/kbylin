@@ -87,6 +87,13 @@ class Dao {
             ],
         ],
     ];
+
+
+    const ACTION_INSERT = 0;
+    const ACTION_UPDATE = 1;
+    const ACTION_SELECT = 2;
+    const ACTION_REMOVE = 3;
+
     /**
      * 自身实例
      * @var Dao
@@ -473,8 +480,7 @@ class Dao {
      */
     public function getPdoError(){
         $pdoError = $this->driver->errorInfo();
-        return isset($pdoError[0])?
-            "Code:{$pdoError[0]} >>> [{$pdoError[1]}]:[{$pdoError[2]}]":null;
+        return isset($pdoError[0])?"Code:{$pdoError[0]} >>> [{$pdoError[1]}]:[{$pdoError[2]}]":null;
     }
     /**
      * 获取PDOStatemnent对象上查询时发生的错误
@@ -575,10 +581,11 @@ class Dao {
     /**
      * 编译组件成适应当前数据库的SQL字符串
      * @param array $components  复杂SQL的组成部分
+     * @param int $actiontype 操作类型
      * @return string
      */
-    public function compile($components){
-        return $this->driver->compile($components);
+    public function compile($components,$actiontype){
+        return $this->driver->compile($components,$actiontype);
     }
 
     /**
