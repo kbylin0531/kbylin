@@ -33,40 +33,10 @@ class DaoTest {
 
 //        $rst = $this->testPrepare();
 //        $rst = $this->testExecute();
-        $rst = $this->testCombine();
 //        $rst = $this->testEscape();
         dump(isset($rst)?$rst:null);
     }
 
-    public function testCombine(){
-        /**
-         *
-SELECT DISTINCT
-oar.id,oar.title,oar.`name`,remark
-from ot_auth_rule oar
-INNER JOIN ot_action oa on oa.id = oar.type
-WHERE oar.`name` like '%article%'
-GROUP BY oar.title
-ORDER BY oar.id
-LIMIT 2,5
-         */
-        $components = [
-            'distinct'  => false,
-            'top'       => '',
-            'fields'    => 'oar.id,oar.title,oar.`name`,remark', //查询的表域情况
-            'table'     => 'ot_auth_rule oar',
-            'join'      => 'INNER JOIN ot_action oa on oa.id = oar.type',     //join部分，需要带上join关键字
-            'where'     => 'oar.`name` like \'%article%\'', //where部分
-            'group'     => 'oar.title', //分组 需要带上group by
-            'having'    => '',//having子句，依赖$group存在，需要带上having部分
-            'order'     => 'oar.id',//排序，不需要带上order by
-            'limit'     => 2,
-            'offset'    => 5,
-        ];
-        $action = Dao::ACTION_SELECT;
-
-        return $this->dao->compile($components,$action);
-    }
 
     //测试Dao的prepare方法
     public function testPrepare(){

@@ -773,8 +773,6 @@ class Dao {
         if(null === $tablename){
             $sql = $this->compile(self::ACTION_INSERT);
 
-
-
             return ;
         }
 
