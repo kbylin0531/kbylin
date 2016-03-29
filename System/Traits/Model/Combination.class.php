@@ -6,7 +6,7 @@
  * Time: 9:48
  */
 namespace System\Traits\Model;
-use System\Core\Model\Dao;
+use System\Core\Dao;
 
 /**
  * Class Combination

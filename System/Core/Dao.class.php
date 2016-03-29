@@ -137,15 +137,15 @@ class Dao {
         $this->driver = self::getDriverInstance($index);
     }
 
-    /*TODO:基本的查询功能 ***************************************************************************************/
-
+//TODO:
+/********************************* 基本的查询功能 ***************************************************************************************/
     /**
      * 简单地查询一段SQL，并且将解析出所有的结果集合
      * @param string $sql 查询的SQL
      * @param array|null $inputs 输入参数
      *                          如果输入参数未设置或者为null（显示声明），则直接查询
      *                          如果输入参数为非空数组，则使用PDOStatement对象查询
-     * @return array|false 返回结果集数组，返回false表示查询出错
+     * @return array|false 返回array类型表述查询结果，返回false表示查询出错，可能是数据表不存在等数据库返回的错误信息
      */
     public function query($sql,array $inputs=null){
         if(null === $inputs){
@@ -157,14 +157,11 @@ class Dao {
                     return $statement->fetchAll();
                 }else{
                     $this->setPdoError();
-                    return false;
                 }
             }catch(\PDOException $e){
                 $this->setPdoError($e->getMessage());
-                return false;
             }
         }else{
-            $statement = null;
             try {
                 //简介调用PDOStatement的查询功能
                 $statement = $this->driver->prepare($sql);
@@ -175,30 +172,45 @@ class Dao {
                 /* prepare可能失败,返回错误或者抛出异常视PDO::ERRMODE_EXCEPTION设置情况而定 */
                 $this->setPdoStatementError($e->getMessage());
             }
-            return false;
         }
+        return false;
     }
     /**
      * 简单地执行Insert、Delete、Update操作
-     * @param string $sql
+     * @param string $sql 待查询的SQL语句，如果未设置输入参数则需要保证SQL已经被转义
+     * @param array|null $inputs 输入参数,具体参考query方法的参数二
      * @return int|false 返回受到影响的行数，但是可能不会太可靠，需要用===判断返回值是0还是false
-     *                   放回false表示了错误
-     * @throws \PDOException
+     *                   返回false表示了错误，可以用getError获取错误信息
      */
-    public function exec($sql){
-        try{
-            $rst = $this->driver->exec($sql);
-            if(false === $rst){
-                $this->error = $this->getPdoError();
-                return false;
+    public function exec($sql,array $inputs=null){
+        if(null === $inputs){
+            try{
+                $rst = $this->driver->exec($sql);
+                if(false !== $rst){
+                    return $rst;
+                }
+                $this->setPdoError();
+            }catch (\PDOException $e){
+                $this->error = $e->getMessage();
             }
-            return $rst;
-        }catch (\PDOException $e){
-            $this->error = "exec sql of '{$sql}' failed!";
-            return false;
+        }else{
+            try {
+                //简介调用PDOStatement的查询功能
+                $statement = $this->driver->prepare($sql);
+                if(false !== $statement and false !== $statement->execute($inputs)){
+                    return $statement->rowCount();
+                }
+            }catch(\PDOException $e){
+                /* prepare可能失败,返回错误或者抛出异常视PDO::ERRMODE_EXCEPTION设置情况而定 */
+                $this->setPdoStatementError($e->getMessage());
+            }
         }
+        return false;
     }
-    /*TODO:高级查询功能 ***************************************************************************************/
+
+
+//TODO:
+/********************************* 高级查询功能 ***************************************************************************************/
 
     /**
      * 准备一段SQL
@@ -223,12 +235,11 @@ class Dao {
      *                  不能绑定多个值到一个单独的参数,如果在 input_parameters 中存在比 PDO::prepare() 预处理的SQL 指定的多的键名，
      *                  则此语句将会失败并发出一个错误。(这个错误在PHP 5.2.0版本之前是默认忽略的)
      * @param \PDOStatement|null $statement 该参数未设定或者为null时使用的PDOStatement为上次prepare的对象
-     * @return bool bool值表示执行成功或者时候，可以通过rowCount方法获取受到影响行数，或者getError获取错误信息
-     * @throws BylinException
+     * @return bool|null bool值表示执行结果，当不存在执行对象时返回null，可以通过rowCount方法获取受到影响行数，或者getError获取错误信息
      */
     public function execute(array $input_parameters = null, \PDOStatement $statement=null){
-        isset($statement) and $this->curStatement = $statement;
-        if(!$this->curStatement) throw new BylinException('No avalible PDOStatement to execute!');
+        null !== $statement and $this->curStatement = $statement;
+        if(!$this->curStatement) return null;
 
         //出错时设置错误信息，注：PDOStatement::execute返回bool类型的结果
         if(false === $this->curStatement->execute($input_parameters)){

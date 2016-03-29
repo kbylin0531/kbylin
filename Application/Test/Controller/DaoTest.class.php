@@ -22,7 +22,13 @@ class DaoTest {
 
 //        $rst = $this->testBaiscQuery();
 //        ($rst = $this->testBaiscErrorQuery()) === false and  $rst = $this->dao->getError();
-        $rst = $this->testComplexQuery();
+//        $rst = $this->testComplexQuery();
+//        ($rst = $this->testComplexQueryError()) === false and $rst = $this->dao->getError();
+//        $rst = $this->testbasicExec();
+//        ($rst = $this->testbasicExecError()) === false and $rst = $this->dao->getError();
+//        $rst = $this->testComplexExec();
+//        ($rst = $this->testComplexExecError1()) === false and $rst = $this->dao->getError();
+        ($rst = $this->testComplexExecError2()) === false and $rst = $this->dao->getError();
         dump($rst);
     }
 
@@ -40,11 +46,69 @@ class DaoTest {
         $sql = 'SELECT `name`,title,remark from ot_action WHERE remark like :remark;';
         return $this->dao->query($sql,[':remark'    => '%积分%']);
     }
+    public function testComplexQueryError(){
+        $sql = 'SELECT `name`,title,remark from ot_actionaa WHERE remark like :remark;';
+        return $this->dao->query($sql,[':remark'    => '%积分%']);
+    }
 
-
-
-
-
+    //测试Dao的exec方法
+    public function testbasicExec(){
+        $sql = '
+INSERT INTO `onethink`.`ot_action` ( `name`, `title`, `remark`, `rule`, `log`, `type`, `status`, `update_time`) VALUES
+(\'update_menu\', \'更新菜单\', \'新增或修改或删除菜单\', \'\', \'\', \'1\', \'1\', \'1383296392\');';
+        return $this->dao->exec($sql);
+    }
+    public function testbasicExecError(){
+        $sql = '
+INSERT INTO `onethink`.`ot_actionsssssssss` ( `name`, `title`, `remark`, `rule`, `log`, `type`, `status`, `update_time`) VALUES
+(\'update_menu\', \'更新菜单\', \'新增或修改或删除菜单\', \'\', \'\', \'1\', \'1\', \'1383296392\');';
+        return $this->dao->exec($sql);
+    }
+    public function testComplexExec(){
+        $sql = '
+INSERT INTO `onethink`.`ot_action` ( `name`, `title`, `remark`, `rule`, `log`, `type`, `status`, `update_time`) VALUES
+(:name,:title,:remark,:rule,:log,:type,:status,:update_time);';
+        return $this->dao->exec($sql,[
+            ':name' => 'update_menu',
+            ':title' => '更新菜单',
+            ':remark' => '新增或修改或删除菜单',
+            ':rule' => '',
+            ':log' => '',
+            ':type' => '1',
+            ':status' => '1',
+            ':update_time' => '1383296392',
+        ]);
+    }
+    public function testComplexExecError1(){
+        $sql = '
+INSERT INTO `onethink`.`ot_actionXXXXXX` ( `name`, `title`, `remark`, `rule`, `log`, `type`, `status`, `update_time`) VALUES
+(:name,:title,:remark,:rule,:log,:type,:status,:update_time);';
+        return $this->dao->exec($sql,[
+            ':name' => 'update_menu',
+            ':title' => '更新菜单',
+            ':remark' => '新增或修改或删除菜单',
+            ':rule' => '',
+            ':log' => '',
+            ':type' => '1',
+            ':status' => '1',
+            ':update_time' => '1383296392',
+        ]);
+    }
+    public function testComplexExecError2(){
+        $sql = '
+INSERT INTO `onethink`.`ot_action` ( `name`, `title`, `remark`, `rule`, `log`, `type`, `status`, `update_time`) VALUES
+(:name,:title,:remark,:rule,:log,:type,:status,:update_time);';
+        return $this->dao->exec($sql,[
+            ':name' => 'update_menu',
+            ':title' => '更新菜单',
+            ':remark' => '新增或修改或删除菜单',
+//            ':rule' => '',
+            ':log' => '',
+            ':type' => '1',
+            ':status' => '1',
+            ':update_time' => '1383296392',
+        ]);
+    }
 
 
 }

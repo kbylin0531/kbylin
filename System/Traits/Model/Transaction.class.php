@@ -6,8 +6,8 @@
  * Time: 9:58
  */
 namespace System\Traits\Model;
+use System\Core\Dao;
 use System\Core\Exception\TransactionException;
-use System\Core\Model\Dao;
 use System\Core\BylinException;
 
 /**
