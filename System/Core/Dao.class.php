@@ -221,11 +221,17 @@ class Dao {
      *  </note>
      * @param string $sql 查询的SQL，当参数二指定的ID存在，只有在参数一布尔值不为false时，会进行真正地prepare
      * @param array $option prepare方法参数二
-     * @return $this
+     * @return PDOStatement|null 返回prepare返回的对象，如果失败则返回null
      */
-    public function prepare($sql,$option=array()){
-        $this->curStatement = $this->driver->prepare($sql,$option);
-        return $this;
+    public function prepare($sql,$option=[]){
+        try{
+            $this->curStatement = null;//如果之前有prepare的SQLStatement对象，隐式清空
+            $this->curStatement = $this->driver->prepare($sql,$option);//prepare失败抛出异常后赋值过程结束,$this->curStatement可能依旧指向之前的SQLStatement对象（可能不为null）
+        }catch(\PDOException $e){
+            /* 当表不存在或者字段不存在时候 */
+            $this->setPdoError($e->getMessage());
+        }
+        return $this->curStatement;
     }
 
     /**
@@ -241,9 +247,14 @@ class Dao {
         null !== $statement and $this->curStatement = $statement;
         if(!$this->curStatement) return null;
 
-        //出错时设置错误信息，注：PDOStatement::execute返回bool类型的结果
-        if(false === $this->curStatement->execute($input_parameters)){
-            $this->setPdoStatementError($this->curStatement);
+        try{
+            //出错时设置错误信息，注：PDOStatement::execute返回bool类型的结果
+            if(false === $this->curStatement->execute($input_parameters)){//参数数目不正确时候会抛出异常"Invalid parameter number"
+                $this->setPdoStatementError($this->curStatement);
+                return false;
+            }
+        }catch(\PDOException $e){
+            $this->setPdoStatementError($e->getMessage());
             return false;
         }
         return true;
@@ -559,7 +570,7 @@ class Dao {
         return $this->driver->escape($fieldName);
     }
 
-/*TODO:扩展方法 ******************************************************************************************/
+/*TODO:驱动实现扩展方法 ******************************************************************************************/
 
     /**
      * 编译组件成适应当前数据库的SQL字符串
@@ -579,40 +590,5 @@ class Dao {
         return $this->driver->escape($fieldname);
     }
 
-    /**
-     * 执行结果信息返回
-     * @return int|string 返回受影响行数，发生错误时返回错误信息
-     */
-    public function doneExecute(){
-        if(null === $this->error){
-            //未发生错误，返回受影响的行数目
-            return $this->rowCount();
-        }else{
-            //发生饿了错误，得到错误信息并清空错误标记
-            $temp = $this->error;
-            $this->error = null;
-            return $temp;
-        }
-    }
-
-    /**
-     * 查询结果集全部返回
-     * 内部实现依赖于fetchAll方法，参数同
-     * @param null $fetch_style
-     * @param null $fetch_argument
-     * @param null $constructor_args
-     * @return string|Dao 返回查询结果集，发生错误时返回错误信息
-     */
-    public function doneQuery($fetch_style = null, $fetch_argument = null, $constructor_args = null){
-        if(null === $this->error){
-            //未发生错误，返回受影响的行数目
-            return $this->fetchAll($fetch_style, $fetch_argument, $constructor_args);
-        }else{
-            //发生饿了错误，得到错误信息并清空错误标记
-            $temp = $this->error;
-            $this->error = null;
-            return $temp;
-        }
-    }
 
 }

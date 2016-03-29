@@ -28,10 +28,43 @@ class DaoTest {
 //        ($rst = $this->testbasicExecError()) === false and $rst = $this->dao->getError();
 //        $rst = $this->testComplexExec();
 //        ($rst = $this->testComplexExecError1()) === false and $rst = $this->dao->getError();
-        ($rst = $this->testComplexExecError2()) === false and $rst = $this->dao->getError();
-        dump($rst);
+//        ($rst = $this->testComplexExecError2()) === false and $rst = $this->dao->getError();
+
+
+//        $rst = $this->testPrepare();
+        $rst = $this->testExecute();
+        dump(isset($rst)?$rst:null);
     }
 
+    //测试Dao的prepare方法
+    public function testPrepare(){
+        $sql = 'SELECT `name`,title from ot_action;';
+        $this->dao->prepare($sql);
+        $sql = 'SELECT `name`,titlXXXXe from ot_action;';
+        return $this->dao->prepare($sql);
+    }
+
+    //测试Dao的execute方法
+    public function testExecute(){
+        $sql = '
+INSERT INTO `onethink`.`ot_action` ( `name`, `title`, `remark`, `rule`, `log`, `type`, `status`, `update_time`) VALUES
+(:name,:title,:remark,:rule,:log,:type,:status,:update_time);';
+        if(null === $this->dao->prepare($sql)){
+            return $this->dao->getError();
+        }else{
+            $rst = $this->dao->execute([
+                ':name' => 'update_menu',
+//                ':title' => '更新菜单',
+                ':remark' => '新增或修改或删除菜单',
+                ':rule' => '',
+                ':log' => '',
+                ':type' => '1',
+                ':status' => '1',
+                ':update_time' => '1383296392',
+            ]);
+            return false === $rst ? $this->dao->getError() : $rst;
+        }
+    }
 
     //测试Dao的query方法
     public function testBaiscQuery(){
@@ -109,6 +142,5 @@ INSERT INTO `onethink`.`ot_action` ( `name`, `title`, `remark`, `rule`, `log`, `
             ':update_time' => '1383296392',
         ]);
     }
-
 
 }
