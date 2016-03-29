@@ -22,12 +22,11 @@ trait Transaction {
      *  之所以用getTransactionDao取代getDao这样的名称，
      *  是因为getDao可能出现在其他的trait中，可能导致方法冲突的问题
      * @param int $index
-     * @param mixed $conf 详细说明参考
      * @return Dao
      * @throws BylinException
      */
-    protected function getTransactionDao($index=null,$conf=null){
-        isset($this->dao) and $this->dao = Dao::getInstance($index,$conf);
+    protected function getTransactionDao($index=null){
+        isset($this->dao) and $this->dao = Dao::getInstance($index);
         return $this->dao;
     }
 
