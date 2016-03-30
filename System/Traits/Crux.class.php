@@ -29,7 +29,7 @@ trait Crux {
      * 类的静态配置
      * @var array
      */
-    protected static $_conventions = [
+    private static $_conventions = [
         /************************************
          'System/Sample' => [
             'DRIVER_DEFAULT_INDEX' => 0,//默认的驱动标识符，类型为int或者string
@@ -43,7 +43,7 @@ trait Crux {
      * 实例数组
      * @var StdClass[]
      */
-    protected static $_instances = [];
+    private static $_instances = [];
 
     /**
      * 初始化本类配置

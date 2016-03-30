@@ -22,6 +22,23 @@ class Model {
 
     const CONF_NAME = 'model';
 
+    /**
+     * 使用private将之私有以
+     * @var Dao[]
+     */
+    private $dao = [];
+
+    /**
+     * 获取数据访问接口对象
+     * @param null|int|string $index
+     * @return \System\Core\Dao
+     */
+    protected function getDao($index=null){
+        if(isset($this->dao[$index])){
+            $this->dao[$index] = Dao::getInstance($index);
+        }
+        return $this->dao[$index];
+    }
 
 
 }

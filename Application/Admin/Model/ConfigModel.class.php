@@ -8,12 +8,12 @@
 namespace Application\Admin\Model;
 use System\Core\Model;
 
-class Config extends Model{
+class ConfigModel extends Model{
 
     const TABLE_NAME = 'bl_config';
 
-    public function getConfigGroupList($id=0){
 
+    public function getConfigGroupList($id=0){
         $this->where("name = 'CONF_GROUP_LIST'")->select();
 
 
