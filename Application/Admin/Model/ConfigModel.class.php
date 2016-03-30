@@ -13,11 +13,9 @@ class ConfigModel extends Model{
     const TABLE_NAME = 'bl_config';
 
 
-    public function getConfigGroupList($id=0){
-        $this->where("name = 'CONF_GROUP_LIST'")->select();
-
-
-
+    public function getConfigList(){
+        $dao = $this->getDao();
+        return $dao->table('bl_entity_config')->select();
     }
 
 }

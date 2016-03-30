@@ -17,7 +17,7 @@ return [
         [
             'type'      => 'Mysql',//数据库类型
 //            'dbname'    => 'bylincms',//选择的数据库
-            'dbname'    => 'onethink',
+            'dbname'    => 'bylincms',
             'username'  => 'lin',
             'password'  => '123456',
             'host'      => '192.168.200.170',

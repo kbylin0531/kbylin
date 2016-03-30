@@ -5,12 +5,22 @@
  * Time: 16:02
  */
 namespace System\Core;
+use System\Utils\SEK;
+use System\Utils\XMLHelper;
 
 /**
  * Class Response 输出控制类
  * @package System\Core
  */
 class Response {
+
+    /**
+     * 返回的消息类型
+     */
+    const MESSAGE_TYPE_SUCCESS = 1;
+    const MESSAGE_TYPE_FAILURE = 0;
+
+
     /**
      * 清空输出缓存
      * @return void
@@ -21,6 +31,43 @@ class Response {
 
     public static function flushOutput(){
         ob_get_level() and ob_end_flush();
+    }
+
+    public static function success($message){
+        self::ajaxBack([
+            'message'   => $message,
+            'type'      => self::MESSAGE_TYPE_SUCCESS,
+        ]);
+    }
+
+    public static function failed($message){
+        self::ajaxBack([
+            'message'   => $message,
+            'type'      => self::MESSAGE_TYPE_FAILURE,
+        ]);
+    }
+
+    /**
+     * Ajax方式返回数据到客户端
+     * @access protected
+     * @param mixed $data 要返回的数据
+     * @param int $type AJAX返回数据格式
+     * @param int $json_option 传递给json_encode的option参数
+     * @return void
+     * @throws BylinException
+     */
+    public static function ajaxBack($data,$type=AJAX_JSON,$json_option=0) {
+        self::cleanOutput();
+        switch (strtoupper($type)){
+            case AJAX_JSON :// 返回JSON数据格式到客户端 包含状态信息
+                header('Content-Type:application/json; charset=utf-8');
+                exit(json_encode($data,$json_option));
+            case AJAX_XML :// 返回xml格式数据
+                header('Content-Type:text/xml; charset=utf-8');
+                exit(XMLHelper::encodeHtml($data));
+            default:
+                throw new BylinException('Invalid output!');
+        }
     }
 
 }

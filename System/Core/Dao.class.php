@@ -172,7 +172,7 @@ class Dao {
      * @return array|false 返回array类型表述查询结果，返回false表示查询出错，可能是数据表不存在等数据库返回的错误信息
      */
     public function query($sql,array $inputs=null){
-        if(null === $inputs){
+        if(!$inputs){
             //直接使用PDO的查询功能
             try{
                 $statement = $this->driver->query($sql);//返回PDOstatement,失败时返回false(或者抛出异常)，视错误的处理方式而定
@@ -207,7 +207,7 @@ class Dao {
      *                   返回false表示了错误，可以用getError获取错误信息
      */
     public function exec($sql,array $inputs=null){
-        if(null === $inputs){
+        if(!$inputs){
             try{
                 $rst = $this->driver->exec($sql);
                 if(false !== $rst){
@@ -860,7 +860,8 @@ class Dao {
     public function select($tablename=null,$fields=null,$whr=null){
 
         if(null === $tablename){
-
+            $sql = $this->compile(self::ACTION_SELECT);
+            return $this->query($sql,$this->_inputs);
         }
 
         $bind = null;

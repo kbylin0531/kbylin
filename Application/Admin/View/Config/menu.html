@@ -24,7 +24,7 @@
 <script>
     $(document).ready(function() {
         var datagrid = $('#datagrid');
-        $.post('{$smarty.const.__ACTION__}',{}, function (data) {
+        $.ipost('{$smarty.const.__ACTION__}',{}, function (data) {
             datagrid.DataTable( {
                 data: data,
                 columns: [

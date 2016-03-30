@@ -220,7 +220,10 @@ class Bylin {
      */
     public function _onShutDown(){
         self::recordStatus("_xor_exec_shutdown");
-        if(DEBUG_MODE_ON and PAGE_TRACE_ON and !IS_AJAX) self::showTrace(6);//页面跟踪信息显示
+        if(DEBUG_MODE_ON and PAGE_TRACE_ON and !IS_AJAX){
+             self::showTrace(6);//页面跟踪信息显示
+        }
+
         if($this->_liteon and !is_file(LITE_FILE_NAME)){ //开启加载 并且Lite文件不存在时  ==> 重新生成
             self::recordStatus('create_lite_begin');
             Storage::write(LITE_FILE_NAME,LiteBuilder::compileInBatch($this->_classes));
@@ -263,6 +266,9 @@ class Bylin {
      * @return void
      */
     public function _handleError($errno,$errstr,$errfile,$errline){
+
+        IS_AJAX and Response::failed($errstr);
+
         //错误信息
         if(!is_string($errstr)) $errstr = serialize($errstr);
         ob_start();
@@ -290,6 +296,9 @@ class Bylin {
      * @return void
      */
     public function _handleException(Exception $e){
+
+        IS_AJAX and Response::failed($e->getMessage());
+
         Response::cleanOutput();
 //        $trace = $e->getTrace();
         $traceString = $e->getTraceAsString();

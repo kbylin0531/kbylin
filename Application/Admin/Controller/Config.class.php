@@ -7,25 +7,19 @@
  */
 namespace Application\Admin\Controller;
 use Application\Admin\General;
+use Application\Admin\Model\ConfigModel;
+use System\Core\Response;
 use System\Core\Router;
-use System\Traits\Controller\Response;
 
 class Config extends General{
 
-    use Response;
 
     public function menu(){
         if (IS_POST) {
-            $this->ajaxBack([
-                    [
-                        "Tiger Nixon",
-                        "System Architect",
-                        "Edinburgh",
-                        "5421",
-                        "2011-04-25",
-                        "$320,800"
-                    ]
-            ]);
+            $configModel = new ConfigModel();
+            $list = $configModel->getConfigList();
+
+            Response::ajaxBack($list);
         }
         $this->display();
     }

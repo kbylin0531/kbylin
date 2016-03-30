@@ -2,6 +2,42 @@
  * Created by linzh_000 on 2016/3/25.
  */
 
+/**
+ * http://www.w3school.com.cn/jquery/ajax_ajax.asp
+ * @param url
+ * @param data
+ * @param callback
+ * @param type
+ * @param handler 信息处理回调函数，该回调返回true表示处理完成并直接返回
+ * @returns {*}
+ */
+jQuery.ipost = function (url, data, callback, type , handler) {
+    if ( jQuery.isFunction( data ) ) {
+        type = type || callback;
+        callback = data;
+        data = undefined;
+    }
+
+    return jQuery.ajax({
+        url: url,
+        type: 'post',
+        dataType: type,
+        data: data,
+        success: function (data,status) {
+            if("object" === typeof data && "type" in data){
+                if(undefined !== handler){
+                    if(true === handler(data)) return ;
+                }else{
+                    return alert(data["message"]);
+                }
+            }
+            return callback(data,status)
+        }
+    });
+};
+
+
+
 
 /**
  * 左侧菜单栏标题点击事件
