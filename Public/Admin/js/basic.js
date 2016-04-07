@@ -37,8 +37,6 @@ jQuery.ipost = function (url, data, callback, type , handler) {
 };
 
 
-
-
 /**
  * 左侧菜单栏标题点击事件
  * @param $title

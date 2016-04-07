@@ -13,7 +13,7 @@ use System\Traits\Crux;
  * Class Configure 设定管理器
  * @package System\Core
  */
-class Configure{
+class Setting{
 
     use Crux;
 

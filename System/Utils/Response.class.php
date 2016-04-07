@@ -4,9 +4,8 @@
  * Date: 2016/3/9
  * Time: 16:02
  */
-namespace System\Core;
-use System\Utils\SEK;
-use System\Utils\XMLHelper;
+namespace System\Utils;
+use System\Core\BylinException;
 
 /**
  * Class Response 输出控制类

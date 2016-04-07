@@ -4,7 +4,7 @@
  * Date: 2016/3/18
  * Time: 20:11
  */
-namespace System\Core;
+namespace System\Utils;
 use System\Traits\Crux;
 
 /**

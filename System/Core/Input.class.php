@@ -16,8 +16,6 @@ class Input {
     const TYPE_BOOL  = 'b';
     const TYPE_STRING= 's';
 
-
-
     /**
      * 判断一个变量是否设置
      * @param string $name
