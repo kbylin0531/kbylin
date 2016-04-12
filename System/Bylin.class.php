@@ -9,7 +9,8 @@ use System\Core\Storage;
 use System\Utils\Network;
 use System\Core\Router;
 use System\Core\Dispatcher;
-use  System\Utils\Response;
+use System\Utils\Response;
+use System\Core\Log;
 
 
 const AJAX_JSON = 0;
@@ -48,6 +49,7 @@ class Bylin {
      * @var array
      */
     protected $_convention = [
+
 
         //-- 目录配置，相对于server.php的位置 --/
         'SYSTEM_DIR'    => 'System/',
@@ -104,7 +106,9 @@ class Bylin {
     public function init(array $config=null){
         self::recordStatus('init_begin');
         $this->_inited and die('实例已完成过初始化!');
-        null !== $config and $this->_convention = array_merge($this->_convention,$config);//合并用户自定义配置和系统封默认配置
+        null !== $config and
+            $this->_convention = array_merge($this->_convention,$config);//合并用户自定义配置和系统封默认配置
+        date_default_timezone_set('Asia/Shanghai') or die('Date format set time zone failed!');
 
         $this->registerConstant();
 
@@ -178,7 +182,6 @@ class Bylin {
      */
     public function inspect($on=true){
         if($on){
-            //TODO:检查目录和文件的完整性
             echo "系统正在检查目录文件设置";
         }
         return $this;
@@ -226,6 +229,7 @@ class Bylin {
 
         $result = Dispatcher::execute($result[0],$result[1],$result[2],$result[3]);
         //依情况对结果进行缓存
+//        Log::write($result);
     }
 
     public function test(){
@@ -297,7 +301,6 @@ class Bylin {
             'position'  => "File:{$errfile}   Line:{$errline}",
             'trace'     => ob_get_clean(),  //回溯信息
         ];
-        //TODO:写入日志
         if(DEBUG_MODE_ON){
             self::loadTemplate('error',$vars);
         }else{
@@ -327,7 +330,6 @@ class Bylin {
             'position'  => 'File:'.$e->getFile().'   Line:'.$e->getLine(),
             'trace'     => $traceString,//回溯信息，可能会暴露数据库等敏感信息
         ];
-        //TODO:写入日志
         if(DEBUG_MODE_ON){
             self::loadTemplate('exception',$vars);
         }else{
