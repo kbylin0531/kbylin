@@ -5,7 +5,7 @@
  * Date: 2016/1/21
  * Time: 20:02
  */
-namespace System\Core\Configure;
+namespace System\Core\Config;
 use System\Core\BylinException;
 use System\Core\Cache;
 
@@ -16,7 +16,7 @@ use System\Core\Cache;
  *
  * @package System\Core\Configure
  */
-class File implements ConfigureInterface {
+class File implements ConfigInterface {
 
     protected $convention = [
         //-- 系统全局配置 --//

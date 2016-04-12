@@ -5,7 +5,7 @@
  * Date: 2016/1/21
  * Time: 14:43
  */
-namespace System\Core;
+namespace System\Library;
 
 /**
  * Class Monitor 资源监视器

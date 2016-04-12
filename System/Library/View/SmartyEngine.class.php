@@ -5,10 +5,10 @@
  * Date: 2016/2/2
  * Time: 10:51
  */
-namespace System\Core\View;
+namespace System\Extension\View;
 use Smarty;
 use System\Core\Exception\FileNotFoundException;
-use System\Core\View;
+use System\Extension\View;
 use System\Utils\Network;
 
 /**

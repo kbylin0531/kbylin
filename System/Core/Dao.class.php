@@ -642,8 +642,6 @@ class Dao {
             return ;
         }
 
-
-
         $fields = $placeholder = '';
         $sql = null;
         $bind  = [];

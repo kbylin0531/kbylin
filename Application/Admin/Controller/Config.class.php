@@ -8,8 +8,8 @@
 namespace Application\Admin\Controller;
 use Application\Admin\General;
 use Application\Admin\Model\ConfigModel;
-use System\Core\Response;
 use System\Core\Router;
+use System\Utils\Response;
 
 class Config extends General{
 

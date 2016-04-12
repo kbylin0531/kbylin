@@ -7,6 +7,7 @@
 namespace System\Traits;
 use StdClass;
 use System\Core\BylinException;
+use System\Core\Config;
 use System\Utils\SEK;
 
 /**
@@ -74,9 +75,9 @@ trait Crux {
                 $pos = strrpos($classname,'\\');
                 $conf = strtolower(false === $pos?$classname:substr($classname,$pos+1));//调用该方法的类的短名称
             }
-            $conf = self::readConfig($conf);
+            $conf = Config::readGlobal($conf);
         }elseif(is_string($conf)){
-            $conf = self::readConfig($conf);
+            $conf = Config::readGlobal($conf);
         }
         if(!is_array($conf)) throw new BylinException('failed to load configuration！');
 
@@ -84,32 +85,9 @@ trait Crux {
 
         //默认的追加配置
         isset(static::$_conventions[$classname]['DRIVER_DEFAULT_INDEX'])    or static::$_conventions[$classname]['DRIVER_DEFAULT_INDEX'] = 0;
-        isset(static::$_conventions[$classname]['DRIVER_CLASS_LIST'])   or static::$_conventions[$classname]['DRIVER_CLASS_LIST'] = [];
-        isset(static::$_conventions[$classname]['DRIVER_CONFIG_LIST'])  or static::$_conventions[$classname]['DRIVER_CONFIG_LIST'] = [];
+        isset(static::$_conventions[$classname]['DRIVER_CLASS_LIST'])       or static::$_conventions[$classname]['DRIVER_CLASS_LIST'] = [];
+        isset(static::$_conventions[$classname]['DRIVER_CONFIG_LIST'])      or static::$_conventions[$classname]['DRIVER_CONFIG_LIST'] = [];
         return true;
-    }
-
-    /**
-     * 读取配置目录下的指定配置文件
-     * 当confname中包含多个配置文件时（以逗号分隔，如'uricreater,uri'）,
-     *  则后面读取的配置将覆盖前面的(后者可作为公共配置，前者是特里配置)
-     * @param string $confname 配置文件名称，不带php后缀
-     * @return array|null 返回配置数组，返回null时表示配置文件不存在
-     */
-    protected static function readConfig($confname){
-        if(false !== strpos($confname,',')){
-            $confs = explode(',',$confname);
-            $result = [];
-            foreach($confs as $name){
-                $temp = self::readConfig($name);
-                null !== $temp and SEK::merge($result,$temp);
-            }
-            return $result;
-        }else{
-            $path = CONFIG_PATH."{$confname}.php";
-            if(!is_file($path)) return null;
-            return include $path;
-        }
     }
 
     /**
@@ -120,7 +98,8 @@ trait Crux {
      * @throws BylinException
      */
     protected static function checkInitialized($doinit=false,$conf=null){
-        return isset(static::$_conventions[static::class])?true:$doinit?static::initialize($conf):false;
+        return isset(static::$_conventions[static::class])?
+            true:$doinit?static::initialize($conf):false;
     }
 
     /**
@@ -135,7 +114,7 @@ trait Crux {
         isset(static::$_conventions[static::class]) or static::initialize($conf);
 
         //实例不存在时候创建
-        if(!isset(self::$_instances[static::class])) self::$_instances[static::class] = [];
+        isset(self::$_instances[static::class]) or self::$_instances[static::class] = [];
 
         //短名
         $thisconvention = &static::$_conventions[static::class];
@@ -168,10 +147,8 @@ trait Crux {
      * @return array
      */
     protected static function getConventions($all=false){
-        return $all?self::$_conventions:isset(static::$_conventions[static::class])?static::$_conventions[static::class]:null;
-    }
-
-    public static function setConventions(){
-
+        self::checkInitialized(true);
+        return $all?self::$_conventions:
+            isset(static::$_conventions[static::class])?static::$_conventions[static::class]:null;
     }
 }

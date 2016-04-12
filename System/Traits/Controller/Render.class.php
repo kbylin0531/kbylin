@@ -7,8 +7,7 @@
  */
 namespace System\Traits\Controller;
 use System\Core\BylinException;
-use System\Core\View;
-
+use System\Extension\View;
 trait Render {
 
     /**

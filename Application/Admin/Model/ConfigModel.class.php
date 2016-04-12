@@ -1,7 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: linzh_000
  * Date: 2016/3/24
  * Time: 15:11
  */
@@ -14,8 +12,9 @@ class ConfigModel extends Model{
 
 
     public function getConfigList(){
-        $dao = $this->getDao();
-        return $dao->table('bl_entity_config')->select();
+        return $this->getDao()->table('bl_entity_config')->select();
     }
+
+
 
 }

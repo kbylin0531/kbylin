@@ -4,9 +4,9 @@
  * Date: 2016/3/17
  * Time: 11:24
  */
-namespace System\Core;
+namespace System\Library;
 use System\Core\Exception\FileNotFoundException;
-use System\Core\View\SmartyEngine;
+use System\Extension\View\SmartyEngine;
 use System\Traits\Crux;
 
 class View {

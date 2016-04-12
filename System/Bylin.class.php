@@ -85,6 +85,24 @@ final class Bylin {
     private $_inited = false;
 
     /**
+     * 状态跟踪信息
+     * @var array
+     */
+    protected static $_status = [];
+
+    /**
+     * 获取运行时刻内存使用情况
+     * @param null|string $tag 状态标签
+     * @return void
+     */
+    public static function recordStatus($tag){
+        DEBUG_MODE_ON and self::$_status[$tag] = [
+            microtime(true),
+            memory_get_usage(),
+        ];
+    }
+
+    /**
      * Bylin constructor.
      * @param null $appname
      * @param array|null $config
@@ -317,22 +335,5 @@ final class Bylin {
         exit;
     }
 
-    /**
-     * 状态跟踪信息
-     * @var array
-     */
-    protected static $_status = [];
-
-    /**
-     * 获取运行时刻内存使用情况
-     * @param null|string $tag 状态标签
-     * @return void
-     */
-    public static function recordStatus($tag){
-        DEBUG_MODE_ON and self::$_status[$tag] = [
-            microtime(true),
-            memory_get_usage(),
-        ];
-    }
 
 }

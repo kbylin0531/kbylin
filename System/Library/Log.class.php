@@ -5,7 +5,7 @@
  * Date: 2016/2/3
  * Time: 15:10
  */
-namespace System\Core;
+namespace System\Library;
 use System\Core\Log\File;
 use System\Traits\Crux;
 use System\Utils\SEK;

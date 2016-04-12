@@ -5,7 +5,7 @@
  * Date: 2016/4/9
  * Time: 14:24
  */
-namespace System\Extension;
+namespace System\Library;
 
 use System\Core\Dao;
 
