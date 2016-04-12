@@ -4,12 +4,13 @@
  * Date: 2016/3/14
  * Time: 20:51
  */
-use System\Core\Response;
 use System\Core\LiteBuilder;
 use System\Core\Storage;
 use System\Utils\Network;
 use System\Core\Router;
 use System\Core\Dispatcher;
+use  System\Utils\Response;
+
 
 const AJAX_JSON = 0;
 const AJAX_XML = 1;
@@ -61,7 +62,8 @@ class Bylin {
         'EXCEPTION_HANDLER' => null, //用户自定义异常处理函数
 
         //函数包列表
-        'FUNC_PACK_LIST'     => [],
+        'FUNC_PACK_LIST'    => [],
+        'FUNC_PATH'         => 'Func/',//相对于BASE_PATH
     ];
     /**
      * 类库的映射
@@ -101,10 +103,40 @@ class Bylin {
      */
     public function init(array $config=null){
         self::recordStatus('init_begin');
-        //初始化控制（要求只能初始化一次）
         $this->_inited and die('实例已完成过初始化!');
         null !== $config and $this->_convention = array_merge($this->_convention,$config);//合并用户自定义配置和系统封默认配置
 
+        $this->registerConstant();
+
+        $this->registerBehaviors();
+
+        $this->loadFunctionPacks();
+
+        $this->_inited = true;
+    }
+
+    /**
+     * 行为注册
+     * @return void
+     */
+    private function registerBehaviors(){
+        self::recordStatus('init_behavior_begin');
+        //错误显示和隐藏
+        error_reporting(DEBUG_MODE_ON?-1:E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);//PHP5.3一下需要用这段 “error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);”
+        ini_set('display_errors',DEBUG_MODE_ON?1:0);
+        //其他行为
+        false === spl_autoload_register(isset($this->_convention['CLASS_LOADER'])?
+            $this->_convention['CLASS_LOADER']:[$this,'_autoLoad']) and die('spl autoload register failed!');
+        set_error_handler(isset($this->_convention['ERROR_HANDLER'])?$this->_convention['EXCEPTION_HANDLER']:[$this,'_handleError']) ;
+        set_exception_handler(isset($this->_convention['EXCEPTION_HANDLER'])?$this->_convention['EXCEPTION_HANDLER']:[$this,'_handleException']);
+        register_shutdown_function([$this,'_onShutDown']);
+    }
+
+    /**
+     * 常量注册
+     * @return void
+     */
+    private function registerConstant(){
         //目录常量
         define('BASE_PATH',str_replace('\\','/',dirname(__DIR__)).'/');
         define('SYSTEM_PATH',BASE_PATH.$this->_convention['SYSTEM_DIR']);
@@ -123,32 +155,20 @@ class Bylin {
         define('APP_NAME',$this->appname);
         define('BASE_URI',dirname($_SERVER['SCRIPT_NAME']).'/');
         define('PUBLIC_URI',BASE_URI.'Public/');
+    }
 
-        //错误显示
-        error_reporting(DEBUG_MODE_ON?-1:E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);//PHP5.3一下需要用这段 “error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);”
-        ini_set('display_errors',DEBUG_MODE_ON?1:0);
-
-        self::recordStatus('init_behavior_begin');
-
-        //行为注册(类加载、错误、异常、脚本结束)
-        false === spl_autoload_register(isset($this->_convention['CLASS_LOADER'])?
-            $this->_convention['CLASS_LOADER']:[$this,'_autoLoad']) and die('spl autoload register failed!');
-        set_error_handler(isset($this->_convention['ERROR_HANDLER'])?$this->_convention['EXCEPTION_HANDLER']:[$this,'_handleError']) ;
-        set_exception_handler(isset($this->_convention['EXCEPTION_HANDLER'])?$this->_convention['EXCEPTION_HANDLER']:[$this,'_handleException']);
-        register_shutdown_function([$this,'_onShutDown']);
-
-        self::recordStatus('init_funcpack_load_begin');
-        //加载函数包(注意函数名冲突)
+    /**
+     * 加载函数包(注意函数名冲突)
+     */
+    private function loadFunctionPacks(){
+        self::recordStatus('funcpack_load_begin');
         include SYSTEM_PATH.'Common/functions.php'; // 加载系统函数包
         if($this->_convention['FUNC_PACK_LIST']){
             foreach($this->_convention['FUNC_PACK_LIST'] as $packname){
-                $filename = BASE_PATH."Func/{$packname}.php";
+                $filename = BASE_PATH.$this->_convention['FUNC_PATH']."{$packname}.php";
                 if(is_file($filename)) include $filename;//使用include代替include_once提高效率
             }
         }
-
-        self::recordStatus('init_end');
-        $this->_inited = true;
     }
 
     /**
@@ -204,9 +224,8 @@ class Bylin {
         define('__CONTROLLER__',Router::create($result[0],$result[1]));
         define('__ACTION__',Router::create($result[0],$result[1],$result[2]));
 
-        Dispatcher::execute($result[0],$result[1],$result[2],$result[3]);
-
-
+        $result = Dispatcher::execute($result[0],$result[1],$result[2],$result[3]);
+        //依情况对结果进行缓存
     }
 
     public function test(){
