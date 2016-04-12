@@ -24,7 +24,7 @@ class File implements CacheInterface {
         'path_level'    => 1,
         'prefix'        => '',
         'length'        => 0,
-        'path'          => BASE_PATH.'Runtime/Cache/File/',
+        'path'          => RUNTIME_PATH.'Cache/File/',
         'data_compress' => false,
     ];
 
@@ -42,6 +42,15 @@ class File implements CacheInterface {
             $this->options['path'] .= '/';
         }
         $this->init();
+    }
+
+    /**
+     * 检查文件系统是否可用
+     * @return bool
+     */
+    public function available(){
+        file_exists($this->options['path']) or mkdir($this->options['path'],0777,true);
+        return is_writeable($this->options['path']);
     }
 
     /**
@@ -97,7 +106,6 @@ class File implements CacheInterface {
         if (!is_file($filename)) {
             return null;//缓存文件不存在
         }
-        Cache::$readTimes++;
         $content = file_get_contents($filename);
         if (false !== $content) {
             $expire = (int) substr($content, 8, 12);
@@ -128,7 +136,6 @@ class File implements CacheInterface {
      */
     public function set($name, $value, $expire = null)
     {
-        Cache::$writeTimes++;
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
@@ -173,7 +180,7 @@ class File implements CacheInterface {
      * @param string $name 缓存变量名
      * @return bool 缓存文件不存在时执行删除操作返回false，文件存在时的返回值是unlink的返回值
      */
-    public function rm($name){
+    public function delete($name){
         $name = $this->filename($name);
         return is_file($name)? unlink($name) : false;
     }
@@ -184,8 +191,8 @@ class File implements CacheInterface {
      * @param string $name 缓存变量名,效果等同于rm方法
      * @return int 返回成功删除的缓存数目，否则返回false
      */
-    public function clear($name=null){
-        if(isset($name)) return $this->rm($name) === true?1:0;
+    public function clean($name=null){
+        if(isset($name)) return $this->delete($name) === true?1:0;
 
 //        $path = $this->options['temp'];//修正为以下
         $path = $this->options['path'];

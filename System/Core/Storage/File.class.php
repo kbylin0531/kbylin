@@ -100,13 +100,13 @@ class File implements StorageInterface {
     /**
      * 设定文件的访问和修改时间
      * @param string $filename 文件路径
-     * @param int $time
-     * @param int $atime
+     * @param int $mtime 文件修改时间
+     * @param int $atime 文件访问时间，如果未设置，则值设置为mtime相同的值
      * @return bool
      */
-    public function touch($filename, $time = null, $atime = null){
+    public function touch($filename, $mtime = null, $atime = null){
         $filename = SEK::toSystemEncode($filename);
-        return touch($filename, $time,$atime);
+        return touch($filename, $mtime,$atime);
     }
 
     /**

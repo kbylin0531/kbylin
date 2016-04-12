@@ -13,6 +13,12 @@ namespace System\Core\Cache;
 interface CacheInterface {
 
     /**
+     * 测试实现本接口的驱动是否可用
+     * @return bool
+     */
+    public function available();
+
+    /**
      * 读取缓存
      * @access public
      * @param string $name 缓存变量名
@@ -25,10 +31,10 @@ interface CacheInterface {
      * @access public
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
-     * @param int $expire  有效时间 0为永久
+     * @param int $expire  有效时间，0为永久（以秒计时）
      * @return boolean
      */
-    public function set($name, $value, $expire = null);
+    public function set($name, $value, $expire = 0);
 
     /**
      * 删除缓存
@@ -36,7 +42,7 @@ interface CacheInterface {
      * @param string $name 缓存变量名
      * @return boolean
      */
-    public function rm($name);
+    public function delete($name);
 
     /**
      * 清除缓存
@@ -44,5 +50,5 @@ interface CacheInterface {
      * @param string $name 缓存变量名
      * @return boolean
      */
-    public function clear($name=null);
+    public function clean($name=null);
 }

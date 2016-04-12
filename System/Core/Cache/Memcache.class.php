@@ -83,6 +83,10 @@ class Memcache implements CacheInterface{
         }
     }
 
+    public function available(){
+        return true;
+    }
+
     /**
      * 读取缓存
      *
@@ -98,7 +102,6 @@ class Memcache implements CacheInterface{
      */
     public function get($name)
     {
-        Cache::$readTimes++;
         $val = $this->handler->get($this->options['prefix'] . $name);
         return false === $this->handler->get($this->options['prefix'] . $name)?null:$val;
     }
@@ -113,7 +116,6 @@ class Memcache implements CacheInterface{
      */
     public function set($name, $value, $expire = null)
     {
-        Cache::$writeTimes++;
         if (NULL === $expire)  $expire = $this->options['expire'];
         $name = $this->options['prefix'] . $name;
         if ($this->handler->set($name, $value, 0, $expire)) {//参数三 MEMCACHE_COMPRESSED
@@ -148,7 +150,7 @@ class Memcache implements CacheInterface{
      *
      * @return bool
      */
-    public function rm($name, $timeout = 0){
+    public function delete($name, $timeout = 0){
         return $this->handler->delete($this->options['prefix'].$name, $timeout);
     }
 
@@ -160,6 +162,6 @@ class Memcache implements CacheInterface{
      * @return bool
      */
     public function clear($name=null){
-        return isset($name) ? $this->rm($name): $this->handler->flush();
+        return isset($name) ? $this->delete($name): $this->handler->flush();
     }
 }

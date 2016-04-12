@@ -9,7 +9,6 @@ use System\Core\Cache\File;
 use System\Core\Cache\Memcache;
 use System\Traits\Crux;
 
-defined('BASE_PATH') or die('No Permission!');
 /**
  * Class Cache 缓存管理类
  * @package System\Library
@@ -17,7 +16,6 @@ defined('BASE_PATH') or die('No Permission!');
 class Cache{
 
     use Crux;
-
     const CONF_NAME = 'cache';
     const CONF_CONVENTION = [
         'DRIVER_DEFAULT_INDEX' => 0,
@@ -52,12 +50,12 @@ class Cache{
      * 读取次数
      * @var int
      */
-    protected static $readTimes   = 0;
+    private static $readTimes   = 0;
     /**
      * 写入次数
      * @var int
      */
-    protected static $writeTimes  = 0;
+    private static $writeTimes  = 0;
 
     /**
      * 使用的驱动的角标
@@ -69,6 +67,7 @@ class Cache{
     /**
      * 选择缓存驱动，在实际读写之前有效
      * @param $index
+     * @return void
      */
     public static function using($index){
         self::$index = $index;
@@ -122,9 +121,9 @@ class Cache{
      * @param string $name 缓存变量名
      * @return boolean
      */
-    public static function rm($name){
+    public static function delete($name){
         ++ self::$writeTimes;
-        return self::getDriverInstance(self::$index)->rm($name);
+        return self::getDriverInstance(self::$index)->delete($name);
     }
 
     /**
@@ -133,9 +132,9 @@ class Cache{
      * @param string $name 缓存变量名
      * @return boolean
      */
-    public static function clear($name=null){
+    public static function clean($name=null){
         ++ self::$writeTimes;
-        return self::getDriverInstance(self::$index)->clear($name);
+        return self::getDriverInstance(self::$index)->clean($name);
     }
 
 }

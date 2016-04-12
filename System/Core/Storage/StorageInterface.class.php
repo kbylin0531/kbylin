@@ -20,7 +20,7 @@ interface StorageInterface {
      * @param string $filepath 文件路径,PHP源码中格式是UTF-8，需要转成GB2312才能使用
      * @param string|array $file_encoding 文件内容实际编码,可以是数组集合或者是编码以逗号分开的字符串
      * @param string $output_encode 文件内容输出编码
-     * @return string 返回文件时间内容
+     * @return string 返回文件内容
      * @throws BylinException
      */
     public function read($filepath,$file_encoding='UTF-8',$output_encode='UTF-8');

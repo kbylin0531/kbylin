@@ -8,7 +8,6 @@ namespace System\Core;
 use System\Core\Storage\File;
 use System\Traits\Crux;
 
-defined('BASE_PATH') or die('No Permission!');
 /**
  * Class Storage 持久化存储类
  * 实际文件可能写在伺服器的文件中，也可能存放到数据库文件中，或者远程文件服务器中

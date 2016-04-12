@@ -53,7 +53,7 @@ class LiteBuilder {
      * @param string $content 文件内容
      * @return int
      */
-    public static function write($path,$content){
+    public static function overwrite($path,$content){
         return file_put_contents($path,$content);
     }
 }

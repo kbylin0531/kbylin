@@ -98,7 +98,7 @@ class Log{
     /**
      * 写入DEBUG信息到日志中
      * @param ...
-     * @return string
+     * @return void
      * @throws BylinException
      */
     public static function debug(){
@@ -113,7 +113,7 @@ class Log{
     /**
      * 写入跟踪信息,信息参数可变长
      * @param ...
-     * @return string
+     * @return void
      */
     public static function trace(){
         $params = func_get_args();

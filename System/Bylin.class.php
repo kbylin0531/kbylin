@@ -34,19 +34,19 @@ defined('PAGE_TRACE_ON') or define('PAGE_TRACE_ON', true); //是否开启TRACE�
 /**
  * Class Bylin
  */
-class Bylin {
+final class Bylin {
 
     /**
      * 应用名称
      * @var string
      */
-    protected $appname = 'Bylin';
+    private $appname = 'Bylin';
 
     /**
      * 应用配置
      * @var array
      */
-    protected $_convention = [
+    private $_convention = [
 
         //-- 目录配置，相对于server.php的位置 --/
         'SYSTEM_DIR'    => 'System/',
@@ -98,6 +98,7 @@ class Bylin {
      * 初始化应用程序
      * 注意：这个过程中不可以调用其它类，真正的类加载过程是在start应用开始
      * @param array $config
+     * @return void
      */
     public function init(array $config=null){
         self::recordStatus('init_begin');
@@ -169,7 +170,7 @@ class Bylin {
      * @param bool $on 是否启用lite文件
      * @return $this
      */
-    public function liten($on=true){
+    public function liten($on=false){
         if($on){
             $this->_liteon = true;
             define('LITE_FILE_NAME',RUNTIME_PATH.APP_NAME.'.lite.php');//运行时核心文件
@@ -229,7 +230,7 @@ class Bylin {
             Storage::write(LITE_FILE_NAME,LiteBuilder::compileInBatch($this->_classes));
             self::recordStatus('create_lite_begin');
         }
-        Response::flushOutput();
+        \System\Utils\Response::flushOutput();
     }
 
     /**
@@ -325,9 +326,9 @@ class Bylin {
      * @param mixed $vars 释放到模板中的变量
      * @param bool $clean 是否清空之前的输出，默认为true
      */
-    public static function loadTemplate($tplname,$vars=null,$clean=true){
+    public static function loadTemplate($tplname,array $vars=null,$clean=true){
         $clean and Response::cleanOutput();
-        if(is_array($vars)) extract($vars, EXTR_OVERWRITE);
+        null !== $vars and extract($vars, EXTR_OVERWRITE);
         $path = SYSTEM_PATH."Tpl/{$tplname}.php";
         is_file($path) or $path = SYSTEM_PATH."Tpl/systemerror.php";
         include $path;
@@ -373,13 +374,13 @@ class Bylin {
         self::$_traces[$path] = $values;
     }
 
-    protected static $_infos = null;
+    private static $_infos = null;
 
     /**
      * 显示trace页面
      * @param int $accuracy
      */
-    protected static function showTrace($accuracy=6){
+    private static function showTrace($accuracy=6){
         //吞吐率  1秒/单次执行时间
         if(count(self::$_status) > 1){
             $last  = end(self::$_status);
