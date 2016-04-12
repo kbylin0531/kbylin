@@ -11,7 +11,7 @@ use System\Core\Router;
 use System\Core\Dispatcher;
 use System\Utils\Response;
 use System\Core\Log;
-
+use System\Utils\SEK;
 
 const AJAX_JSON = 0;
 const AJAX_XML = 1;
@@ -110,37 +110,6 @@ class Bylin {
             $this->_convention = array_merge($this->_convention,$config);//合并用户自定义配置和系统封默认配置
         date_default_timezone_set('Asia/Shanghai') or die('Date format set time zone failed!');
 
-        $this->registerConstant();
-
-        $this->registerBehaviors();
-
-        $this->loadFunctionPacks();
-
-        $this->_inited = true;
-    }
-
-    /**
-     * 行为注册
-     * @return void
-     */
-    private function registerBehaviors(){
-        self::recordStatus('init_behavior_begin');
-        //错误显示和隐藏
-        error_reporting(DEBUG_MODE_ON?-1:E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);//PHP5.3一下需要用这段 “error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);”
-        ini_set('display_errors',DEBUG_MODE_ON?1:0);
-        //其他行为
-        false === spl_autoload_register(isset($this->_convention['CLASS_LOADER'])?
-            $this->_convention['CLASS_LOADER']:[$this,'_autoLoad']) and die('spl autoload register failed!');
-        set_error_handler(isset($this->_convention['ERROR_HANDLER'])?$this->_convention['EXCEPTION_HANDLER']:[$this,'_handleError']) ;
-        set_exception_handler(isset($this->_convention['EXCEPTION_HANDLER'])?$this->_convention['EXCEPTION_HANDLER']:[$this,'_handleException']);
-        register_shutdown_function([$this,'_onShutDown']);
-    }
-
-    /**
-     * 常量注册
-     * @return void
-     */
-    private function registerConstant(){
         //目录常量
         define('BASE_PATH',str_replace('\\','/',dirname(__DIR__)).'/');
         define('SYSTEM_PATH',BASE_PATH.$this->_convention['SYSTEM_DIR']);
@@ -159,12 +128,18 @@ class Bylin {
         define('APP_NAME',$this->appname);
         define('BASE_URI',dirname($_SERVER['SCRIPT_NAME']).'/');
         define('PUBLIC_URI',BASE_URI.'Public/');
-    }
 
-    /**
-     * 加载函数包(注意函数名冲突)
-     */
-    private function loadFunctionPacks(){
+        self::recordStatus('init_behavior_begin');
+        //错误显示和隐藏
+        error_reporting(DEBUG_MODE_ON?-1:E_ALL & ~E_NOTICE & ~E_DEPRECATED & ~E_STRICT & ~E_USER_NOTICE & ~E_USER_DEPRECATED);//PHP5.3一下需要用这段 “error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);”
+        ini_set('display_errors',DEBUG_MODE_ON?1:0);
+        //其他行为
+        false === spl_autoload_register(isset($this->_convention['CLASS_LOADER'])?
+            $this->_convention['CLASS_LOADER']:[$this,'_autoLoad']) and die('spl autoload register failed!');
+        set_error_handler(isset($this->_convention['ERROR_HANDLER'])?$this->_convention['EXCEPTION_HANDLER']:[$this,'_handleError']) ;
+        set_exception_handler(isset($this->_convention['EXCEPTION_HANDLER'])?$this->_convention['EXCEPTION_HANDLER']:[$this,'_handleException']);
+        register_shutdown_function([$this,'_onShutDown']);
+
         self::recordStatus('funcpack_load_begin');
         include SYSTEM_PATH.'Common/functions.php'; // 加载系统函数包
         if($this->_convention['FUNC_PACK_LIST']){
@@ -173,6 +148,8 @@ class Bylin {
                 if(is_file($filename)) include $filename;//使用include代替include_once提高效率
             }
         }
+
+        $this->_inited = true;
     }
 
     /**
@@ -227,7 +204,8 @@ class Bylin {
         define('__CONTROLLER__',Router::create($result[0],$result[1]));
         define('__ACTION__',Router::create($result[0],$result[1],$result[2]));
 
-        $result = Dispatcher::execute($result[0],$result[1],$result[2],$result[3]);
+//        $result =
+            Dispatcher::execute($result[0],$result[1],$result[2],$result[3]);
         //依情况对结果进行缓存
 //        Log::write($result);
     }
@@ -244,7 +222,7 @@ class Bylin {
     public function _onShutDown(){
         self::recordStatus("_xor_exec_shutdown");
         if(DEBUG_MODE_ON and PAGE_TRACE_ON and !IS_AJAX){
-             self::showTrace(6);//页面跟踪信息显示
+             SEK::showTrace(self::$_status,6);//页面跟踪信息显示
         }
 
         if($this->_liteon and !is_file(LITE_FILE_NAME)){ //开启加载 并且Lite文件不存在时  ==> 重新生成
@@ -280,6 +258,7 @@ class Bylin {
             }
         }
     }
+
     /**
      * 系统默认的错误处理函数
      * @param $errno
@@ -302,9 +281,9 @@ class Bylin {
             'trace'     => ob_get_clean(),  //回溯信息
         ];
         if(DEBUG_MODE_ON){
-            self::loadTemplate('error',$vars);
+            SEK::loadTemplate('error',$vars);
         }else{
-            self::loadTemplate('user_error');
+            SEK::loadTemplate('user_error');
         }
         //异常处理完成后仍然会继续执行，需要强制退出
         exit;
@@ -331,34 +310,17 @@ class Bylin {
             'trace'     => $traceString,//回溯信息，可能会暴露数据库等敏感信息
         ];
         if(DEBUG_MODE_ON){
-            self::loadTemplate('exception',$vars);
+            SEK::loadTemplate('exception',$vars);
         }else{
-            self::loadTemplate('user_error');
+            SEK::loadTemplate('user_error');
         }
         //异常处理完成后仍然会继续执行，需要强制退出
         exit;
     }
 
 //--------------------------------------- 静态方法区 ------------------------------------------------------------//
-    /**
-     * 加载模板
-     * @param string $tplname 模板文件路径
-     * @param mixed $vars 释放到模板中的变量
-     * @param bool $clean 是否清空之前的输出，默认为true
-     */
-    public static function loadTemplate($tplname,$vars=null,$clean=true){
-        $clean and Response::cleanOutput();
-        if(is_array($vars)) extract($vars, EXTR_OVERWRITE);
-        $path = SYSTEM_PATH."Tpl/{$tplname}.php";
-        is_file($path) or $path = SYSTEM_PATH."Tpl/systemerror.php";
-        include $path;
-    }
 
-    /**
-     * 变量跟踪信息
-     * @var array
-     */
-    protected static $_traces = [];
+
     /**
      * 状态跟踪信息
      * @var array
@@ -375,97 +337,6 @@ class Bylin {
             microtime(true),
             memory_get_usage(),
         ];
-    }
-
-    /**
-     * 跟踪trace信息
-     * @param ...
-     * @return void
-     */
-    public static function trace(){
-        $values = func_get_args();
-        $trace = debug_backtrace();
-        if(isset($trace[0])){
-            //显示调用trace方法的行号
-            $path = "{$trace[0]['class']}{$trace[0]['type']}{$trace[0]['function']}[Line:{$trace[0]['line']}]";
-        }else{//特殊情况，使用特殊值
-            $path = uniqid('[ANY]');
-        }
-        self::$_traces[$path] = $values;
-    }
-
-    protected static $_infos = null;
-
-    /**
-     * 显示trace页面
-     * @param int $accuracy
-     */
-    protected static function showTrace($accuracy=6){
-        //吞吐率  1秒/单次执行时间
-        if(count(self::$_status) > 1){
-            $last  = end(self::$_status);
-            $first = reset(self::$_status);            //注意先end后reset
-            $stat = [
-                1000*round($last[0] - $first[0], $accuracy),
-                number_format(($last[1] - $first[1]), $accuracy)
-            ];
-        }else{
-            $stat = [0,0];
-        }
-        $reqs = empty($stat[0])?'Unknown':1000*number_format(1/$stat[0],8).' req/s';
-
-        //包含的文件数组
-        $files  =  get_included_files();
-        $info   =   [];
-        foreach ($files as $key=>$file){
-            $info[] = $file.' ( '.number_format(filesize($file)/1024,2).' KB )';
-        }
-
-        //运行时间与内存开销
-        $fkey = null;
-        $cmprst = [
-            'Total' => "{$stat[0]}ms",//一共花费的时间
-        ];
-        foreach(self::$_status as $key=>$val){
-            if(null === $fkey){
-                $fkey = $key;
-                continue;
-            }
-            $cmprst["[$fkey --> $key]    "] =
-                number_format(1000 * floatval(self::$_status[$key][0] - self::$_status[$fkey][0]),6).'ms&nbsp;&nbsp;'.
-                number_format((floatval(self::$_status[$key][1] - self::$_status[$fkey][1])/1024),2).' KB';
-            $fkey = $key;
-        }
-        $vars = [
-            'trace' => [
-                'General'       => [
-                    'Request'   => date('Y-m-d H:i:s',$_SERVER['REQUEST_TIME']).' '.$_SERVER['SERVER_PROTOCOL'].' '.$_SERVER['REQUEST_METHOD'],
-                    'Time'      => "{$stat[0]}ms",
-                    'QPS'       => $reqs,//吞吐率
-                    'SessionID' => session_id(),
-                    'Cookie'    => var_export($_COOKIE,true),
-                    'Obcache-Size'  => number_format((ob_get_length()/1024),2).' KB (Lack TRACE!)',//不包括trace
-                ],
-                'Trace'       => self::$_traces,
-                'Files'         => array_merge(['Total'=>count($info)],$info),
-                'Status'        => $cmprst,
-                'GET'           => $_GET,
-                'POST'          => $_POST,
-                'SERVER'        => $_SERVER,
-                'FILES'         => $_FILES,
-                'ENV'           => $_ENV,
-                'SESSION'       => isset($_SESSION)?$_SESSION:['SESSION state disabled'],//session_start()之后$_SESSION数组才会被创建
-                'IP'            => [
-                    '$_SERVER["HTTP_X_FORWARDED_FOR"]'  =>  isset($_SERVER['HTTP_X_FORWARDED_FOR'])?$_SERVER['HTTP_X_FORWARDED_FOR']:'NULL',
-                    '$_SERVER["HTTP_CLIENT_IP"]'  =>  isset($_SERVER['HTTP_CLIENT_IP'])?$_SERVER['HTTP_CLIENT_IP']:'NULL',
-                    '$_SERVER["REMOTE_ADDR"]'  =>  $_SERVER['REMOTE_ADDR'],
-                    'getenv("HTTP_X_FORWARDED_FOR")'  =>  getenv('HTTP_X_FORWARDED_FOR'),
-                    'getenv("HTTP_CLIENT_IP")'  =>  getenv('HTTP_CLIENT_IP'),
-                    'getenv("REMOTE_ADDR")'  =>  getenv('REMOTE_ADDR'),
-                ],
-            ],
-        ];
-        self::loadTemplate('trace',$vars,false);//参数三表示不清空之前的缓存区
     }
 
 
