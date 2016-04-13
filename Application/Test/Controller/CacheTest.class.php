@@ -12,6 +12,8 @@ use System\Core\Cache;
 class CacheTest {
 
 
+    const CACHE_ID = 1;
+
     public function index(){
 
 
@@ -19,17 +21,21 @@ class CacheTest {
 
 
     public function get(){
-        Cache::using(0);
+        Cache::using(self::CACHE_ID);
         dumpout(Cache::get('key01'));
     }
 
     public function del(){
-        Cache::using(0);
+        Cache::using(self::CACHE_ID);
         dumpout(Cache::delete('key01'));
     }
 
+    public function clean(){
+        dumpout(Cache::clean());
+    }
+
     public function set(){
-        Cache::using(0);
+        Cache::using(self::CACHE_ID);
         dumpout(Cache::set('key01',array('hello world'),30));
     }
 

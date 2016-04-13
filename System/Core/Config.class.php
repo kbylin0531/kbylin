@@ -13,7 +13,6 @@ use System\Core\Exception\ParameterInvalidException;
 use System\Traits\Crux;
 use System\Utils\SEK;
 
-//use Spyc;
 /**
  * Class Configure 设定管理器
  * @package System\Core
@@ -31,8 +30,10 @@ class Config {
         'DRIVER_CONFIG_LIST' => [
         ],
         'CONFIG_CACHE_LIST'     => [],
-        'CONFIG_CACHE_EXPIRE'   => 0,
+        'CONFIG_CACHE_EXPIRE'   => 0,//0表示永不过期
     ];
+
+    const CACHE_ID = '__CONFIG__';
 
     /**
      * 配置缓存
@@ -91,7 +92,7 @@ class Config {
      * @return array 返回全部配置，配置名称为键
      * @throws ParameterInvalidException
      */
-    public static function getAllGlobal($list){
+    public static function readAllGlobal($list=null){
         if(is_string($list)) $list = explode(',',$list);
         //无法读取驱动内部的缓存或者缓存不存在  => 重新读取配置并生成缓存
         foreach($list as $item){
@@ -115,10 +116,10 @@ class Config {
                 //检验获取的配置项是否合理
                 throw new BylinException('配置项"CONFIG_CACHE_LIST"或"CONFIG_CACHE_EXPIRE"缺失！');
             }
-            null === $cachedata and $cachedata = self::getAllGlobal($config['CONFIG_CACHE_LIST']);
+            null === $cachedata and $cachedata = self::readAllGlobal($config['CONFIG_CACHE_LIST']);
             null === $expire  and $expire = $config['CONFIG_CACHE_EXPIRE'];
         }
-        return self::getDriver()->storeGlobalCache($cachedata,$expire);
+        return Cache::set(self::CACHE_ID,$cachedata,$expire);
     }
 
     /**
@@ -126,7 +127,7 @@ class Config {
      * @return array|null
      */
     public static function getGlobalCache(){
-        return self::getDriver()->loadGlobalCache();
+        return Cache::get(self::CACHE_ID);
     }
 
     /**
@@ -161,13 +162,22 @@ class Config {
      * @return mixed 返回配置信息数组
      * @throws BylinException
      */
-    public static function get($items=null,$replacement=null){
+    public static function getGlobal($items=null,$replacement=null){
+        static $globals = null;
+        if(null === $globals){
+            $globals = self::getGlobalCache();
+            if(null === $globals){
+                $globals = self::readAllGlobal();
+                self::setGlobalCache($globals);
+            }
+        }
+        if(null === $globals) throw new BylinException('获取全局配置失败');
 
         $configes = null;//配置分段，如果未分段则保持null的值
         //检查参数并设置分段
         if(null === $items){
             //默认参数时返回全部
-            return self::$confcache;
+            return $globals;
         }elseif(is_string($items)){
             $configes = false === strpos($items,'.')?[$items]:explode('.',$items);
         }elseif(is_array($items)){
@@ -175,7 +185,7 @@ class Config {
         }
 
         //获取第一段的配置
-        $rtn = self::$confcache[array_shift($configes)];
+        $rtn = $globals[array_shift($configes)];
 
         //如果为true表示是经过分段的
         if($configes){

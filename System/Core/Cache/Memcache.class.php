@@ -12,7 +12,7 @@
 namespace System\Core\Cache;
 use System\Core\BylinException;
 use System\Core\Cache;
-use Memcache as PHPMemcache; // 避免命名冲突
+use System\Utils\SEK;
 
 
 /**
@@ -29,7 +29,7 @@ use Memcache as PHPMemcache; // 避免命名冲突
  */
 class Memcache implements CacheInterface{
     /**
-     * @var PHPMemcache
+     * @var \Memcache
      */
     protected $handler = null;
 
@@ -58,7 +58,7 @@ class Memcache implements CacheInterface{
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
         }
-//        dumpout($this->options);
+
         $this->handler = new \Memcache();
         // 支持集群
         if(false !== strpos($this->options['host'],',')){
@@ -76,15 +76,25 @@ class Memcache implements CacheInterface{
         // 建立连接
         foreach ($hosts as $i => $host) {
             $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
-//            _xor::trace([$hosts,$ports,$host, $port]);
-            if(false === $this->handler->addServer($host, $port, $this->options['persistent'], 1, $this->options['timeout'])){
+            SEK::trace([$host, $port]);
+            //添加成功时并不会测试是否可用
+            $result = $this->handler->addServer($host, $port, $this->options['persistent'], 1, $this->options['timeout']);
+            dump($result);
+            if(!$result){
                 throw new BylinException('连接到Memcache服务器失败！');
             }
         }
+        dumpout($this->options,$this->handler,$this->handler->set('dsds', ''));
     }
 
+    /**
+     * 测试链接是否可用
+     *
+     * 如果不可用，请检查IP和端口是否正确，并检查防火墙是否限制了该端口的访问
+     * @return bool
+     */
     public function available(){
-        return true;
+        return $this->handler->set('______test_avalable_______', '');
     }
 
     /**
@@ -116,9 +126,15 @@ class Memcache implements CacheInterface{
      */
     public function set($name, $value, $expire = null)
     {
+
         if (NULL === $expire)  $expire = $this->options['expire'];
         $name = $this->options['prefix'] . $name;
-        if ($this->handler->set($name, $value, 0, $expire)) {//参数三 MEMCACHE_COMPRESSED
+
+        $result = $this->handler->set($name, $value, 0, $expire);
+
+        dumpout($this->handler,$result);
+
+        if ($result) {//参数三 MEMCACHE_COMPRESSED
             if ($this->options['length'] > 0) {
                 // 记录缓存队列
                 $queue = $this->handler->get('__info__');
@@ -158,10 +174,9 @@ class Memcache implements CacheInterface{
      * 清除缓存
      * Flush all existing items at the server
      * @access public
-     * @param null $name
      * @return bool
      */
-    public function clear($name=null){
-        return isset($name) ? $this->delete($name): $this->handler->flush();
+    public function clean(){
+        return $this->handler->flush();
     }
 }
