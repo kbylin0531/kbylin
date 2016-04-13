@@ -5,7 +5,7 @@
  * Date: 2016/2/2
  * Time: 10:49
  */
-namespace System\Extension\View;
+namespace System\Library\View;
 use System\Core\Exception\FileNotFoundException;
 
 /**

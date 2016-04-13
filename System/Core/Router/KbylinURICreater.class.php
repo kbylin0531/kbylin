@@ -6,7 +6,7 @@
  * Time: 16:32
  */
 namespace System\Core\Router;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 use System\Utils\Network;
 use System\Utils\SEK;
 
@@ -14,7 +14,7 @@ use System\Utils\SEK;
  * Class XorURICreater 用于URI地址创建
  * @package System\Core\Router
  */
-class BylinURICreater implements URICreaterInterface {
+class KbylinURICreater implements URICreaterInterface {
 
     private $convention = [
         //API模式，直接使用$_GET
@@ -131,7 +131,7 @@ class BylinURICreater implements URICreaterInterface {
      * 获取主机名称
      * @param string|array $modules
      * @return null|string
-     * @throws BylinException
+     * @throws KbylinException
      */
     public function createHostname($modules){
         //模块标识符

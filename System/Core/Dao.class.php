@@ -312,11 +312,11 @@ class Dao {
      * 如果上一条由相关 PDOStatement 执行的 SQL 语句是一条 SELECT 语句，有些数据可能返回由此语句返回的行数
      * 但这种方式不能保证对所有数据有效，且对于可移植的应用不应依赖于此方式
      * @return int
-     * @throws BylinException
+     * @throws KbylinException
      */
     public function rowCount(){
         if(!$this->curStatement){
-            throw new BylinException('Invalid PDOStatement');
+            throw new KbylinException('Invalid PDOStatement');
         }
         return $this->curStatement->rowCount();
     }
@@ -632,7 +632,7 @@ class Dao {
      * @param string $tablename
      * @param array $fieldsMap
      * @return bool 返回true或者false
-     * @throws BylinException
+     * @throws KbylinException
      */
     public function create($tablename=null,array $fieldsMap=null){
 
@@ -683,7 +683,7 @@ class Dao {
      * @param string|array $flds
      * @param string|array $whr
      * @return bool
-     * @throws BylinException
+     * @throws KbylinException
      */
     public function update($tablename,$flds,$whr){;
         $input_params = [];
@@ -719,7 +719,7 @@ class Dao {
      * @param string|array|null $fields
      * @param string|array|null $whr
      * @return array|bool
-     * @throws BylinException
+     * @throws KbylinException
      */
     public function select($tablename=null,$fields=null,$whr=null){
 
@@ -739,7 +739,7 @@ class Dao {
             },$fields);
             $fields = implode(',',$fields);
         }elseif(!is_string($fields)){
-            throw new BylinException('Parameter 2 require the type of "null","array","string" ,now is invalid!');
+            throw new KbylinException('Parameter 2 require the type of "null","array","string" ,now is invalid!');
         }
 
         if(null === $whr){
@@ -751,7 +751,7 @@ class Dao {
         }elseif(is_string($whr)){
             $sql = "select {$fields} from {$tablename} where {$whr};";
         }else{
-            throw new BylinException('Parameter 3 require the type of "null","array","string" ,now is invalid!');
+            throw new KbylinException('Parameter 3 require the type of "null","array","string" ,now is invalid!');
         }
 
 
@@ -780,7 +780,7 @@ class Dao {
      * @param string $operator 操作符
      * @param bool $translate 是否对字段名称进行转义,MSSQL中使用[]
      * @return array
-     * @throws BylinException
+     * @throws KbylinException
      */
     protected function makeFieldBind($fieldName,$fieldValue,$operator='=',$translate=false){
         $fieldName = trim($fieldName,' :[]');
@@ -814,11 +814,11 @@ class Dao {
                 }elseif(is_array($fieldValue)){
                     $sql .= " {$operator} ('".implode("','",$fieldValue)."')";
                 }else{
-                    throw new BylinException("The parameter 1 '{$fieldValue}' is invalid!");
+                    throw new KbylinException("The parameter 1 '{$fieldValue}' is invalid!");
                 }
                 break;
             default:
-                throw new BylinException("The parameter 2 '{$operator}' is invalid!");
+                throw new KbylinException("The parameter 2 '{$operator}' is invalid!");
         }
         return [$sql,$bind];
     }

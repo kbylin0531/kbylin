@@ -29,20 +29,26 @@ const TYPE_RESOURCE = 'resource';
 const TYPE_NULL     = 'NULL';
 const TYPE_UNKNOWN  = 'unknown type';
 
+/**
+ * 异常情况下返回还是抛出异常
+ */
+const MODE_RETURN = 0;
+const MODE_EXCEPTION = 1;
+
 date_default_timezone_set('Asia/Shanghai'); //避免使用date函数时的警告
 defined('DEBUG_MODE_ON') or define('DEBUG_MODE_ON', true); //是否开启DUBUG模式
 defined('PAGE_TRACE_ON') or define('PAGE_TRACE_ON', true); //是否开启TRACE界面
 
 /**
- * Class Bylin
+ * Class Kbylin
  */
-final class Bylin {
+final class Kbylin {
 
     /**
      * 应用名称
      * @var string
      */
-    private $appname = 'Bylin';
+    private $appname = 'Kbylin';
 
     /**
      * 应用配置
@@ -103,7 +109,7 @@ final class Bylin {
     }
 
     /**
-     * Bylin constructor.
+     * Kbylin constructor.
      * @param null $appname
      * @param array|null $config
      */

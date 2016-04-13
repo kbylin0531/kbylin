@@ -70,12 +70,12 @@ class Cache{
      * 选择缓存驱动，在实际读写之前有效
      * @param int|string $index 驱动索引
      * @return void
-     * @throws BylinException 使用了不存在的索引
+     * @throws KbylinException 使用了不存在的索引
      */
     public static function using($index){
         $convention = self::getConventions();
         if(!isset($convention['DRIVER_CLASS_LIST'][$index])){
-            throw new BylinException($index);
+            throw new KbylinException($index);
         }
         self::$index = $index;
     }

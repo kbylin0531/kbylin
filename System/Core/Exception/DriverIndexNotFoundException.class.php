@@ -7,6 +7,6 @@
  */
 namespace System\Core\Exception;
 
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
-class DriverIndexNotFoundException extends BylinException{}
+class DriverIndexNotFoundException extends KbylinException{}

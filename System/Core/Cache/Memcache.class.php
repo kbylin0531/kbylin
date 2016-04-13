@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 
 namespace System\Core\Cache;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 use System\Core\Cache;
 use System\Utils\SEK;
 
@@ -48,12 +48,12 @@ class Memcache implements CacheInterface{
      * 架构函数
      * @param array $options 缓存参数
      * @access public
-     * @throws BylinException
+     * @throws KbylinException
      */
     public function __construct(array $options = []) {
 
         if (!extension_loaded('memcache')) {
-            throw new BylinException('_NOT_SUPPERT_:memcache');
+            throw new KbylinException('_NOT_SUPPERT_:memcache');
         }
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
@@ -81,7 +81,7 @@ class Memcache implements CacheInterface{
             $result = $this->handler->addServer($host, $port, $this->options['persistent'], 1 , $this->options['timeout']);
 //            dump($result);
             if(!$result){
-                throw new BylinException('连接到Memcache服务器失败！');
+                throw new KbylinException('连接到Memcache服务器失败！');
             }
         }
 //        dumpout($this->options,$this->handler,$this->handler->set('dsds', ''));

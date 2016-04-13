@@ -5,10 +5,10 @@
  * Date: 2016/2/2
  * Time: 10:51
  */
-namespace System\Extension\View;
+namespace System\Library\View;
 use Smarty;
 use System\Core\Exception\FileNotFoundException;
-use System\Extension\View;
+use System\Library\View;
 use System\Utils\Network;
 
 /**
@@ -99,7 +99,7 @@ class SmartyEngine implements ViewEngineInterface {
      * @throws FileNotFoundException
      */
     public function display($template = null, $cache_id = null, $compile_id = null, $parent = null){
-        \Bylin::recordStatus('display_begin');
+        \Kbylin::recordStatus('display_begin');
 
         //拟上下文转化成数组
         $context = &$this->_context;
@@ -116,11 +116,11 @@ class SmartyEngine implements ViewEngineInterface {
 //        $this->smarty->setTemplateDir(dirname($template));
         $this->smarty->setCompileDir("{$cachedir}compile/");
         $this->smarty->setCacheDir("{$cachedir}cache/");
-        \Bylin::recordStatus('view_display_begin');
+        \Kbylin::recordStatus('view_display_begin');
 
         //显示模板文件
         $this->smarty->display($template,$cache_id,$compile_id,$parent);
-        \Bylin::recordStatus('view_display_end');
+        \Kbylin::recordStatus('view_display_end');
     }
 
 }

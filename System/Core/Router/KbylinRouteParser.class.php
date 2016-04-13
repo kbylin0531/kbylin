@@ -10,7 +10,7 @@ use System\Utils\SEK;
 use System\Utils\StringHelper;
 
 /**
- * Class BylinRouteParser Bylin内置路由解析器
+ * Class KbylinRouteParser Kbylin内置路由解析器
  * 系欸规则:
  *  一、普通规则 : 符合该式"Ma[{MMB}Mb]{MCB}C{CAB}A{APB}PN1[{PKVB}PV1[[{PPB}PN2{PKVB}PV2]...]]"的URI可以进行解析
  *  二、路由规则 :
@@ -29,7 +29,7 @@ use System\Utils\StringHelper;
  *
  * @package System\Core\Router
  */
-class BylinRouteParser implements RouteParserInterface{
+class KbylinRouteParser implements RouteParserInterface{
 
 
     private $convention = [
@@ -154,7 +154,7 @@ class BylinRouteParser implements RouteParserInterface{
      * @return void
      */
     public function parseInAPI(){
-        \Bylin::recordStatus('fetchurl_in_topspeed_begin');
+        \Kbylin::recordStatus('fetchurl_in_topspeed_begin');
         $vars = [
             $this->convention['API_MODULES_VARIABLE'],
             $this->convention['API_CONTROLLER_VARIABLE'],
@@ -170,7 +170,7 @@ class BylinRouteParser implements RouteParserInterface{
         unset($_GET[$vars[0]],$_GET[$vars[1]],$_GET[$vars[2]]);
         $this->result['p'] = $_GET;
 
-        \Bylin::recordStatus('fetchurl_in_topspeed_end');
+        \Kbylin::recordStatus('fetchurl_in_topspeed_end');
     }
 
     /**
@@ -179,7 +179,7 @@ class BylinRouteParser implements RouteParserInterface{
      * @return void
      */
     public function parseInCommon($uri){
-        \Bylin::recordStatus('parseurl_in_common_begin');
+        \Kbylin::recordStatus('parseurl_in_common_begin');
         $bridges = [
             'mm'  => $this->convention['MM_BRIDGE'],
             'mc'  => $this->convention['MC_BRIDGE'],
@@ -189,7 +189,7 @@ class BylinRouteParser implements RouteParserInterface{
             'pkv'  => $this->convention['PKV_BRIDGE'],
         ];
         $this->stripMasqueradeTail($uri);
-        \Bylin::recordStatus('parseurl_in_pathinfo_getpathinfo_done');
+        \Kbylin::recordStatus('parseurl_in_pathinfo_getpathinfo_done');
         //-- 解析PATHINFO --//
         //截取参数段param与定位段local
         $papos          = strpos($uri,$bridges['ap']);
@@ -207,7 +207,7 @@ class BylinRouteParser implements RouteParserInterface{
         //逆向检查CA是否存在衔接
         $mcaparsed = $this->parseMCA($mcapart,$bridges);
         $this->result = array_merge($this->result,$mcaparsed);
-        \Bylin::recordStatus('parseurl_in_pathinfo_getmac_done');
+        \Kbylin::recordStatus('parseurl_in_pathinfo_getmac_done');
 
         //-- 解析参数部分 --//
         $this->result['p'] = SEK::toParametersArray($pparts,$bridges['pp'],$bridges['pkv']);
@@ -215,7 +215,7 @@ class BylinRouteParser implements RouteParserInterface{
         SEK::merge($_GET,$this->result['p']);
 
         //注意到$_GET和$_REQUEST并不同步，当动态添加元素到$_GET中后，$_REQUEST中不会自动添加
-        \Bylin::recordStatus('parseurl_in_common_end');
+        \Kbylin::recordStatus('parseurl_in_common_end');
     }
 
     /**

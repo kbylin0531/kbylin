@@ -7,7 +7,7 @@
  */
 namespace System\Core\Dao;
 use PDO;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
 /**
  * Class DaoAbstract Dao
@@ -40,13 +40,13 @@ abstract class DaoAbstract extends PDO {
      * 创建驱动类对象
      * DatabaseDriver constructor.
      * @param array $config
-     * @throws BylinException 未设置
+     * @throws KbylinException 未设置
      */
     public function __construct(array $config){
         try {
             parent::__construct($this->buildDSN($config),$config['username'],$config['password'],$config['options']);
         } catch(\PDOException $e){
-            throw new BylinException('连接失败!错误:'.$e->getMessage());
+            throw new KbylinException('连接失败!错误:'.$e->getMessage());
         }
     }
 

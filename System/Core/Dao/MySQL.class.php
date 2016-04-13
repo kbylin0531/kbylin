@@ -7,7 +7,7 @@
  */
 namespace System\Core\Dao;
 
-use System\Core\BylinException;
+use System\Core\KbylinException;
 use System\Core\Dao;
 
 class MySQL extends DaoAbstract{
@@ -48,7 +48,7 @@ class MySQL extends DaoAbstract{
      * @param array $components  复杂SQL的组成部分
      * @param int $actiontype 操作类型
      * @return string
-     * @throws BylinException
+     * @throws KbylinException
      */
     public function compile(array $components,$actiontype){
         $_components = array(
@@ -71,7 +71,7 @@ class MySQL extends DaoAbstract{
                 break;
 
             default:
-                throw new BylinException('Unexpect action type');
+                throw new KbylinException('Unexpect action type');
         }
     }
 

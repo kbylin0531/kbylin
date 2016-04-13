@@ -6,6 +6,6 @@
  * Time: 10:19
  */
 namespace System\Core\Exception;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
-class TransactionException extends BylinException{}
+class TransactionException extends KbylinException{}

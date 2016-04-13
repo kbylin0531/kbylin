@@ -46,7 +46,7 @@ trait Location{
             'javascript:history.back(-1);':
             'javascript:window.close();';
 
-        \Bylin::loadTemplate('jump',$vars);
+        \Kbylin::loadTemplate('jump',$vars);
     }
 
     /**

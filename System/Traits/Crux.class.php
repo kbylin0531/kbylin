@@ -6,7 +6,7 @@
  */
 namespace System\Traits;
 use StdClass;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 use System\Core\Config;
 use System\Utils\SEK;
 
@@ -53,7 +53,7 @@ trait Crux {
      *      string类型时表示类的配置文件的名称，配置文件存放于预定义目录下，使用PHP的设置
      *      array类型时表示类的惯例配置，此时将不读取用户配置，该配置可以是缓存中的（提高执行效率）
      * @return bool|true 返回是否初始化成功（现在总是返回true）
-     * @throws BylinException
+     * @throws KbylinException
      */
     protected static function initialize($conf=null){
         $classname = static::class;//调用该方法的类的名称
@@ -79,7 +79,7 @@ trait Crux {
         }elseif(is_string($conf)){
             $conf = Config::readGlobal($conf);
         }
-//        if(!is_array($conf)) throw new BylinException('failed to load configuration！');
+//        if(!is_array($conf)) throw new KbylinException('failed to load configuration！');
 
         is_array($conf) and SEK::merge(static::$_conventions[$classname],$conf);
 
@@ -95,7 +95,7 @@ trait Crux {
      * @param bool $doinit 在未初始化的情况下是否继续进行初始化
      * @param string|array|null $conf 配置文件名称或者配置数组
      * @return bool
-     * @throws BylinException
+     * @throws KbylinException
      */
     protected static function checkInitialized($doinit=false,$conf=null){
         return isset(static::$_conventions[static::class])?
@@ -107,7 +107,7 @@ trait Crux {
      * @param int|string $index
      * @param mixed $conf 详细说明参考
      * @return mixed
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function getDriverInstance($index=null,$conf=null){
         //检查初始化情况
@@ -124,7 +124,7 @@ trait Crux {
 
         if(!isset($thisinstances[$index])){
             if(!isset($thisconvention['DRIVER_CLASS_LIST'][$index])) {
-                throw new BylinException('找不到指定的驱动！');
+                throw new KbylinException('找不到指定的驱动！');
             }
             //获取驱动类名称和构造参数
             $driverclass = $thisconvention['DRIVER_CLASS_LIST'][$index];

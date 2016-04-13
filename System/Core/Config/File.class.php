@@ -6,7 +6,7 @@
  * Time: 20:02
  */
 namespace System\Core\Config;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 use System\Core\Cache;
 use System\Core\Storage;
 
@@ -40,7 +40,7 @@ class File implements ConfigInterface {
     /**
      * File constructor.
      * @param array $conf
-     * @throws BylinException 无法建立缓存时抛出
+     * @throws KbylinException 无法建立缓存时抛出
      */
     public function __construct(array $conf){
         $this->convention = array_merge($this->convention,$conf);

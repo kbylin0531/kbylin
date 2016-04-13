@@ -48,7 +48,7 @@ class Log{
      * @param string $level 日志界别
      * @param string $datetime 日志时间标识符，如“2016-03-17/09”日期和小时之间用'/'划分
      * @return string 返回UID
-     * @throws BylinException
+     * @throws KbylinException
      */
     protected static function fetchLogUID($level=self::LOG_LEVEL_DEBUG,$datetime=null){
         if(isset($datetime)){
@@ -66,7 +66,7 @@ class Log{
                     $path = RUNTIME_PATH."Log/{$level}/{$datetime[1]}/{$datetime[2]}.log";
                     break;
                 default:
-                    throw new BylinException("Undefined log making rate constant of '{$thisconfig['LOG_RATE']}'!");
+                    throw new KbylinException("Undefined log making rate constant of '{$thisconfig['LOG_RATE']}'!");
             }
         }
         return $path;
@@ -99,7 +99,7 @@ class Log{
      * 写入DEBUG信息到日志中
      * @param ...
      * @return void
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function debug(){
         $content = '';

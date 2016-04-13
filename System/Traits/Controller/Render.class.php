@@ -6,8 +6,8 @@
  * Time: 20:24
  */
 namespace System\Traits\Controller;
-use System\Core\BylinException;
-use System\Extension\View;
+use System\Core\KbylinException;
+use System\Library\View;
 trait Render {
 
     /**
@@ -42,7 +42,7 @@ trait Render {
      * 获取调用类的上下文环境
      * @param string|null $clsnm 类名称,不设置的情况下将自动获取
      * @return $this
-     * @throws BylinException
+     * @throws KbylinException
      */
     protected function fetchContext($clsnm=null){
         null === $clsnm and $clsnm = static::class;//get_called_class()
@@ -52,7 +52,7 @@ trait Render {
         }else{
             //如果出现名称空间不规范的情况，直接终止程序
             //一般会在调度器中检测不到类时抛出异常，所以这一步很难执行到
-            throw new BylinException("类名'{$clsnm}'不符合命名空间规范，请参阅文档！");
+            throw new KbylinException("类名'{$clsnm}'不符合命名空间规范，请参阅文档！");
         }
         return $this;
     }
@@ -114,9 +114,9 @@ trait Render {
         View::assign($this->_tVars);
 
         //格式化模板变量
-        \Bylin::recordStatus('display_begin');
+        \Kbylin::recordStatus('display_begin');
         View::display($context,$cache_id,$compile_id,$parent);
-        \Bylin::recordStatus('display_end');
+        \Kbylin::recordStatus('display_end');
     }
 
     /**

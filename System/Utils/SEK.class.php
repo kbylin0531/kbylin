@@ -5,7 +5,7 @@
  * Time: 16:00
  */
 namespace System\Utils;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
 /**
  * Class SEK 系统执行工具(System Execute Kits)
@@ -25,11 +25,11 @@ final class SEK {
      * 即UTF-8转GB2312
      * @param $str
      * @return string|false 转化失败返回false
-     * @throws BylinException 编码转换失败时抛出异常
+     * @throws KbylinException 编码转换失败时抛出异常
      */
     public static function toSystemEncode($str){
         $result = iconv('UTF-8','GB2312//IGNORE',$str);
-        if(false === $result) throw new BylinException(['UTF-8','GB2312//IGNORE',$str]);
+        if(false === $result) throw new KbylinException(['UTF-8','GB2312//IGNORE',$str]);
         return $result;
     }
 
@@ -142,11 +142,11 @@ final class SEK {
      * 即GB2312转UTF-8
      * @param string $str 待转换的字符串
      * @return string|false 转化失败返回false
-     * @throws BylinException 编码转换失败时抛出异常
+     * @throws KbylinException 编码转换失败时抛出异常
      */
     public static function toProgramEncode($str){
         $result = iconv('GB2312','UTF-8//IGNORE',$str);
-        if(false === $result) throw new BylinException(['GB2312','UTF-8//IGNORE',$str]);
+        if(false === $result) throw new KbylinException(['GB2312','UTF-8//IGNORE',$str]);
         return $result;
     }
 
@@ -376,7 +376,7 @@ final class SEK {
      * @param string|array $modules 模块序列
      * @param string $mmbridge 模块之间的分隔符
      * @return array
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function toModulesArray($modules, $mmbridge='/'){
         if(is_string($modules)){
@@ -387,7 +387,7 @@ final class SEK {
             }
         }
         if(!is_array($modules)){
-            throw new BylinException('Parameter should be an array!');
+            throw new KbylinException('Parameter should be an array!');
         }
         return array_map(function ($val) {
             return StringHelper::toJavaStyle($val);
@@ -399,7 +399,7 @@ final class SEK {
      * @param array|string $modules 模块序列
      * @param string $mmb
      * @return string
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function toModulesString($modules,$mmb='/'){
         if(is_array($modules)){
@@ -408,7 +408,7 @@ final class SEK {
             }
             $modules = implode($mmb,$modules);
         }
-        if(!is_string($modules)) throw new BylinException('Invalid Parameters');
+        if(!is_string($modules)) throw new KbylinException('Invalid Parameters');
         return trim($modules);
     }
     /**
@@ -498,7 +498,7 @@ final class SEK {
      * @param string $file 配置文件名
      * @param callable $parser 配置解析方法 有些格式需要用户自己解析
      * @return array|mixed
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function parseConfigFile($file,callable $parser=null){
         $ext = pathinfo($file, PATHINFO_EXTENSION);
@@ -517,7 +517,7 @@ final class SEK {
                 if (isset($parser)) {
                     return $parser($file);
                 } else {
-                    throw new BylinException('无法解析配置文件');
+                    throw new KbylinException('无法解析配置文件');
                 }
         }
     }
@@ -536,11 +536,11 @@ final class SEK {
      * @param string $keys
      * @param array $array
      * @return bool 键值是否存在
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function keysExistInArray($keys,$array){
         $keys = explode('.', $keys);
-        if(false === $keys) throw new BylinException("[{$keys}]不合法！");
+        if(false === $keys) throw new KbylinException("[{$keys}]不合法！");
         foreach ($keys as $val) {
             if (!isset($array[$val])) {
                 return false;

@@ -7,6 +7,6 @@
  */
 namespace System\Core\Exception;
 
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
-class FileNotFoundException extends BylinException{}
+class FileNotFoundException extends KbylinException{}

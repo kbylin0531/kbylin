@@ -6,7 +6,7 @@
  * Time: 9:59
  */
 namespace System\Core\Log;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 use System\Core\Log;
 use System\Core\Storage;
 use System\Utils\Network;
@@ -24,7 +24,7 @@ class File implements LogInterface{
      * @param string $logpath 日志文件位置或者标识符（一个日志文件或者日志组是唯一的）
      * @param string|array $content 日志内容
      * @return bool 写入是否成功
-     * @throws BylinException
+     * @throws KbylinException
      */
     public function write($logpath,$content){
         $date = SEK::getDate();
@@ -41,8 +41,8 @@ class File implements LogInterface{
 
         if(is_file($logpath)){
             $handler = fopen($logpath,'a+');//追加方式，如果文件不存在则无法创建
-            if(false === fwrite($handler,$ready2write)) throw new BylinException('最佳形式的日志文件写入失败！');
-            if(false === fclose($handler)) throw new BylinException('追加形式的日志文件关闭失败');
+            if(false === fwrite($handler,$ready2write)) throw new KbylinException('最佳形式的日志文件写入失败！');
+            if(false === fclose($handler)) throw new KbylinException('追加形式的日志文件关闭失败');
             return true;
         }else{
             //写入0个字节或者返回false都被认为失败

@@ -7,5 +7,5 @@
 const PAGE_TRACE_ON = true;
 const DEBUG_MODE_ON = true;
 
-include './System/Bylin.class.php';
-(new Bylin())->liten(false)->inspect(false)->start();
+include './System/Kbylin.class.php';
+(new Kbylin())->liten(false)->inspect(false)->start();

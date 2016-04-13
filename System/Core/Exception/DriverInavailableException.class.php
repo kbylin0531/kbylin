@@ -7,6 +7,6 @@
  */
 namespace System\Core\Exception;
 
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
-class DriverInavailableException extends BylinException{}
+class DriverInavailableException extends KbylinException{}

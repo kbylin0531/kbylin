@@ -6,7 +6,7 @@
  */
 namespace System\Library;
 use System\Core\Exception\FileNotFoundException;
-use System\Extension\View\SmartyEngine;
+use System\Library\View\SmartyEngine;
 use System\Traits\Crux;
 
 class View {

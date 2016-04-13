@@ -6,4 +6,4 @@
  */
 namespace System\Core;
 
-class BylinException extends \Exception{}
+class KbylinException extends \Exception{}

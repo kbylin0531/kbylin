@@ -6,7 +6,8 @@
  * Time: 10:11
  */
 namespace System\Core\Storage;
-use System\Core\BylinException;
+use System\Core\Exception\FileWriteFailedException;
+use System\Core\KbylinException;
 use System\Core\Storage;
 use System\Utils\SEK;
 
@@ -16,6 +17,48 @@ use System\Utils\SEK;
  */
 class File implements StorageInterface {
 
+    private $convention = [
+        'READ_LIMIT_ON'     => true,
+        'WRITE_LIMIT_ON'    => true,
+        'READABLE_SCOPE'    => BASE_PATH,
+        'WRITABLE_SCOPE'    => RUNTIME_PATH,
+        'ACCESS_FAILED_MODE'    => MODE_RETURN,
+    ];
+
+    public function __construct(array $config){
+        $this->convention = array_merge($this->convention,$config);
+    }
+
+    /**
+     * 检查目标目录是否可读取
+     *
+     * $accesspath代表的是可以访问的目录
+     * $path 表示正在访问的文件或者目录
+     *
+     * @param string $path 路径
+     * @param bool $isread
+     * @return bool 表示是否可以访问
+     * @throws DirectoryAccessFailedException
+     */
+    private function checkAccessable($path,$isread=true){
+        if($isread){
+            if(!$this->convention['READ_LIMIT_ON']) return true;
+            $accesspath = $this->convention['READABLE_SCOPE'];
+        }else{
+            if(!$this->convention['WRITE_LIMIT_ON']) return true;
+            $accesspath = $this->convention['WRITABLE_SCOPE'];
+        }
+//        dump($accesspath,$path);
+        $path = dirname($path);//修改的目录
+        $accesspath = rtrim($accesspath,'/');
+        $result = IS_WIN?stripos($path,$accesspath):strpos($path,$accesspath);//检查允许访问的目录是否是其一部分
+//        dump($result,$accesspath,$path);
+        if(0 !== $result and MODE_EXCEPTION === $this->convention['ACCESS_FAILED_MODE']){
+            throw new DirectoryAccessFailedException("{$accesspath},{$accesspath}");
+        }
+        return 0 === $result;
+    }
+
     /**
      * 获取文件内容
      * 注意：
@@ -24,12 +67,14 @@ class File implements StorageInterface {
      * @param string|array $file_encoding 文件内容实际编码,可以是数组集合或者是编码以逗号分开的字符串
      * @param string $output_encode 文件内容输出编码
      * @return string 返回文件时间内容
-     * @throws BylinException
+     * @throws KbylinException
      */
     public function read($filepath,$file_encoding='UTF-8',$output_encode='UTF-8'){
+        if(!$this->checkAccessable($filepath,true)) return null;
+
         $content = file_get_contents(SEK::toSystemEncode($filepath));
         if(false === $content){
-            throw new BylinException($filepath);
+            throw new KbylinException($filepath);
         }elseif($file_encoding === $output_encode){
             return $content;
         }else{
@@ -46,17 +91,18 @@ class File implements StorageInterface {
      * @param string $content 要写入的文件内容(一定是UTF-8编码)
      * @param string $write_encode 写入文件时的编码
      * @return int 返回写入的字节数目,失败时抛出异常
-     * @throws BylinException
+     * @throws FileWriteFailedException
      */
     public function write($filepath,$content,$write_encode='UTF-8'){
+        if(!$this->checkAccessable($filepath,false)) return null;
         $dir      =  dirname($filepath);
-        if(!$this->has($dir)) $this->makeFolder($dir);//文件不存在则创建
+        if(!$this->has($dir)) $this->makeDirectory($dir);//文件不存在则创建
         if($write_encode !== 'UTF-8'){//非UTF-8时转换编码
             $content = iconv('UTF-8',$write_encode,$content);
         }
         $rst = file_put_contents(SEK::toSystemEncode($filepath),$content);
         if(false === $rst){
-            throw new BylinException($filepath,$content);
+            throw new FileWriteFailedException($filepath,$content);
         }
         return $rst;
     }
@@ -67,23 +113,24 @@ class File implements StorageInterface {
      * @param string $content 要写入的文件内容
      * @param string $write_encode 写入文件时的编码
      * @return int 返回写入的字节数目
-     * @throws BylinException
+     * @throws KbylinException
      */
     public function append($filepath,$content,$write_encode='UTF-8'){
+        if(!$this->checkAccessable($filepath,false)) return null;
 //        SEK::dump($filepath,$content,$write_encode);exit;
         if(!$this->has($filepath)){
             return $this->write($filepath,$content,$write_encode);
         }
         $temp = SEK::toSystemEncode($filepath);
         if(false === is_writable($temp)){
-            throw new BylinException($filepath);
+            throw new KbylinException($filepath);
         }
         $handler = fopen($temp,'a+');//追加方式，如果文件不存在则无法创建
         if($write_encode !== 'UTF-8'){
             $content = iconv('UTF-8',$write_encode,$content);
         }
         $rst = fwrite($handler,$content);
-        if(false === fclose($handler)) throw new BylinException($filepath,$content);
+        if(false === fclose($handler)) throw new KbylinException($filepath,$content);
         return $rst;
     }
     /**
@@ -93,20 +140,22 @@ class File implements StorageInterface {
      * @return bool
      */
     public function has($filepath){
+        if(!$this->checkAccessable($filepath,true)) return null;
         $filepath = SEK::toSystemEncode($filepath);
         return file_exists($filepath);
     }
 
     /**
      * 设定文件的访问和修改时间
-     * @param string $filename 文件路径
+     * @param string $filepath 文件路径
      * @param int $mtime 文件修改时间
      * @param int $atime 文件访问时间，如果未设置，则值设置为mtime相同的值
      * @return bool
      */
-    public function touch($filename, $mtime = null, $atime = null){
-        $filename = SEK::toSystemEncode($filename);
-        return touch($filename, $mtime,$atime);
+    public function touch($filepath, $mtime = null, $atime = null){
+        if(!$this->checkAccessable($filepath,false)) return null;
+        $filepath = SEK::toSystemEncode($filepath);
+        return touch($filepath, $mtime,$atime);
     }
 
     /**
@@ -115,6 +164,7 @@ class File implements StorageInterface {
      * @return bool
      */
     public function unlink($filepath){
+        if(!$this->checkAccessable($filepath,false)) return null;
         $filepath = SEK::toSystemEncode($filepath);
         return is_file($filepath)?unlink($filepath):rmdir($filepath);
     }
@@ -125,7 +175,8 @@ class File implements StorageInterface {
      * @param string $filepath 文件路径
      * @return int
      */
-    public function filemtime($filepath){
+    public function mtime($filepath){
+        if(!$this->checkAccessable($filepath,false)) return null;
         return filemtime(SEK::toSystemEncode($filepath));
     }
 
@@ -134,7 +185,8 @@ class File implements StorageInterface {
      * @param string $filepath 文件路径
      * @return int
      */
-    public function filesize($filepath){
+    public function size($filepath){
+        if(!$this->checkAccessable($filepath,true)) return null;
         return filesize(SEK::toSystemEncode($filepath));
     }
 
@@ -147,9 +199,10 @@ class File implements StorageInterface {
      * @param string $path 目录
      * @param bool $clear 是否清除之前的配置
      * @return array
-     * @throws BylinException
+     * @throws KbylinException
      */
-    public function readFolder($path,$clear=true){
+    public function readDirectory($path,$clear=true){
+        if(!$this->checkAccessable($path,true)) return null;
         static $_file = array();
         if($clear){
             $_file = array();
@@ -165,13 +218,13 @@ class File implements StorageInterface {
                         $fullpath = SEK::toProgramEncode($fullpath);
                         $_file[$filename] = str_replace('\\','/',$fullpath);
                     }elseif(is_dir($fullpath)) {
-                        $this->readFolder($fullpath,false);//递归,不清空
+                        $this->readDirectory($fullpath,false);//递归,不清空
                     }
                 }
             }
             closedir($handler);//关闭目录指针
         }else{
-            throw new BylinException("Path '{$path}' is not a dirent!");
+            throw new KbylinException("Path '{$path}' is not a dirent!");
         }
         return $_file;
     }
@@ -182,7 +235,8 @@ class File implements StorageInterface {
      * @param bool $recursion 是否递归删除
      * @return bool
      */
-    public function removeFolder($dirpath,$recursion=false){
+    public function removeDirectory($dirpath,$recursion=false){
+        if(!$this->checkAccessable($dirpath,false)) return null;
         if(!$this->has($dirpath)) return false;
         //扫描目录
         $dh = opendir(SEK::toSystemEncode($dirpath));
@@ -193,7 +247,7 @@ class File implements StorageInterface {
                     return false;
                 }
                 $path = str_replace('\\','/',"{$dirpath}/{$file}");
-                if(false === (is_dir(SEK::toSystemEncode($path))?$this->removeFolder($path,true):$this->unlink($path))){
+                if(false === (is_dir(SEK::toSystemEncode($path))?$this->removeDirectory($path,true):$this->unlink($path))){
                     return false;//***全等运算符优先级高于三目
                 }
             }
@@ -208,7 +262,8 @@ class File implements StorageInterface {
      * @param int $auth 文件权限，八进制表示
      * @return bool
      */
-    public function makeFolder($dirpath,$auth = 0755){
+    public function makeDirectory($dirpath,$auth = 0755){
+        if(!$this->checkAccessable($dirpath,false)) return null;
         $dirpath = SEK::toSystemEncode($dirpath);
         if(is_dir($dirpath)){
             return chmod($dirpath,$auth);

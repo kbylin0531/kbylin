@@ -62,7 +62,7 @@ class Hook {
      * @param string $tag 方法名（标签名）
      * @param Mixed $params 方法的参数
      * @return mixed
-     * @throws BylinException
+     * @throws KbylinException
      */
     private static function exec($callableorclass, $tag = '', &$params = null) {
         if ($callableorclass instanceof \Closure) {
@@ -74,7 +74,7 @@ class Hook {
                 $obj->$tag($params) : /*如果目标对象中存在这个$tag，则是callable的*/
                 call_user_func([$obj,'run'],$params)/*$obj->run($params)*/;
         }else{
-            throw new BylinException('错误的标签值：'.var_export($callableorclass,true));
+            throw new KbylinException('错误的标签值：'.var_export($callableorclass,true));
         }
     }
 }

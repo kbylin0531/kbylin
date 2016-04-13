@@ -113,7 +113,7 @@ class Config {
      * @param array $cachedata 缓存的数据
      * @param int $expire 缓存时间
      * @return bool 创建缓存是否成功
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function setGlobalCache(array $cachedata=null, $expire=null){
         if(!isset($cachedata,$expire)){
@@ -121,7 +121,7 @@ class Config {
             $config = self::getConventions();
             if(!isset($config['CONFIG_CACHE_LIST'],$config['CONFIG_CACHE_EXPIRE'])){
                 //检验获取的配置项是否合理
-                throw new BylinException('配置项"CONFIG_CACHE_LIST"或"CONFIG_CACHE_EXPIRE"缺失！');
+                throw new KbylinException('配置项"CONFIG_CACHE_LIST"或"CONFIG_CACHE_EXPIRE"缺失！');
             }
             null === $cachedata and $cachedata = self::readAllGlobal($config['CONFIG_CACHE_LIST']);
             null === $expire  and $expire = $config['CONFIG_CACHE_EXPIRE'];
@@ -145,7 +145,7 @@ class Config {
      * @param string|null|array $items 配置项
      * @param mixed|null $replacement 当指定的配置项不存在时,仅仅在获取第二段开始的部分时有效
      * @return mixed 返回配置信息数组
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function getGlobal($items=null,$replacement=null){
         static $globals = null;
@@ -156,7 +156,7 @@ class Config {
                 self::setGlobalCache($globals);
             }
         }
-        if(null === $globals) throw new BylinException('获取全局配置失败');
+        if(null === $globals) throw new KbylinException('获取全局配置失败');
 
         $configes = null;//配置分段，如果未分段则保持null的值
         //检查参数并设置分段
@@ -219,7 +219,7 @@ class Config {
      * @param string $items 配置项名称，同get方法，可以是分段的设置
      * @param mixed $value 配置项的值
      * @return bool
-     * @throws BylinException 要设置的第一项不存在时抛出异常
+     * @throws KbylinException 要设置的第一项不存在时抛出异常
      */
     public static function set($items,$value){
         //检查配置缓存

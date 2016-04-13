@@ -6,6 +6,6 @@
  * Time: 22:45
  */
 namespace System\Core\Exception;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
-class ControllerNotFoundException extends BylinException{}
+class ControllerNotFoundException extends KbylinException{}

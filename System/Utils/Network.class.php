@@ -6,7 +6,7 @@
  * Time: 9:44
  */
 namespace System\Utils;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 use System\Core\Router;
 
 /**
@@ -407,7 +407,7 @@ class Network {
      * @param string $content  下载的内容
      * @param integer $expire  下载内容浏览器缓存时间
      * @return void
-     * @throws BylinException
+     * @throws KbylinException
      */
     static public function download ($filename, $showname='',$content='',$expire=180) {
         if(is_file($filename)) {
@@ -418,7 +418,7 @@ class Network {
         }elseif($content != '') {
             $length = strlen($content);
         }else {
-            throw new BylinException("file '$filename' not found !");
+            throw new KbylinException("file '$filename' not found !");
         }
         if(empty($showname)) {
             $showname = $filename;

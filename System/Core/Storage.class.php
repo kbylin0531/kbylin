@@ -24,7 +24,15 @@ class Storage {
         'DRIVER_CLASS_LIST' => [
             File::class,
         ],
-        'DRIVER_CONFIG_LIST' => [],
+        'DRIVER_CONFIG_LIST' => [
+            [
+                'READ_LIMIT_ON'     => true,
+                'WRITE_LIMIT_ON'    => true,
+                'READABLE_SCOPE'    => BASE_PATH,
+                'WRITABLE_SCOPE'    => RUNTIME_PATH,
+                'ACCESS_FAILED_MODE'    => MODE_RETURN,
+            ]
+        ],
     ];
 
     /**
@@ -56,7 +64,7 @@ class Storage {
      * @param string $filepath 文件名
      * @param string $content 文件内容
      * @param string $write_encode 文件写入编码
-     * @return int 返回写入的字节数目,失败时抛出异常
+     * @return int 成功写入的字节数目
      */
     public static function write($filepath,$content,$write_encode='UTF-8') {
         return self::getDriver()->write($filepath,$content,$write_encode);
@@ -111,18 +119,8 @@ class Storage {
      * @param string $filename 文件路径信息
      * @return mixed
      */
-    public static function filesize($filename){
+    public static function size($filename){
         return self::getDriver()->size($filename);
-    }
-
-    /**
-     * 删除文件夹
-     * @param string $dir 文件夹目录
-     * @param bool $recursion 是否递归删除
-     * @return bool true成功删除，false删除失败
-     */
-    public static function removeFolder($dir,$recursion=false) {
-        return self::getDriver()->removeFolder($dir,$recursion);
     }
 
     /**
@@ -132,20 +130,32 @@ class Storage {
      * @param int $auth 文件权限，八进制表示
      * @return bool
      */
-    public static function makeFolder($fullpath,$auth = 0755){
-        return self::getDriver()->makeFolder($fullpath,$auth);
+    public static function makeDirectory($fullpath,$auth = 0755){
+        return self::getDriver()->makeDirectory($fullpath,$auth);
     }
+
+    /**
+     * 删除文件夹
+     * @param string $path 文件夹目录
+     * @param bool $recursion 是否递归删除
+     * @return bool true成功删除，false删除失败
+     */
+    public static function removeDirectory($path,$recursion=false) {
+        return self::getDriver()->removeDirectory($path,$recursion);
+    }
+
     /**
      * 读取文件夹内容，并返回一个数组(不包含'.'和'..')
      * array(
      *      //文件内容  => 文件内容
      *      'filename' => 'file full path',
      * );
-     * @param string $dir 文件夹路径
-     * @return array
+     * @param string $path 文件夹路径
+     * @param bool $recursion 是否递归读取
+     * @return array|null
      */
-    public static function readFolder($dir){
-        return self::getDriver()->readFolder($dir);
+    public static function readDirectory($path,$recursion=false){
+        return self::getDriver()->readDirectory($path,$recursion);
     }
 
 }

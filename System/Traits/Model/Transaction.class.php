@@ -8,7 +8,7 @@
 namespace System\Traits\Model;
 use System\Core\Dao;
 use System\Core\Exception\TransactionException;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
 /**
  * Class Transaction 事物相关
@@ -23,7 +23,7 @@ trait Transaction {
      *  是因为getDao可能出现在其他的trait中，可能导致方法冲突的问题
      * @param int $index
      * @return Dao
-     * @throws BylinException
+     * @throws KbylinException
      */
     protected function getTransactionDao($index=null){
         isset($this->dao) and $this->dao = Dao::getInstance($index);

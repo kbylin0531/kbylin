@@ -37,16 +37,16 @@ class Dispatcher{
      * @param null|string $action 操作名称
      * @param null|array $parameters 参数列表
      * @return mixed|null 返回方法执行结果
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function execute($modules,$ctrler,$action,array $parameters=null){
-        \Bylin::recordStatus('execute_begin');
+        \Kbylin::recordStatus('execute_begin');
 
         self::checkInitialized(true);
 
         //完整性检查
         if(!isset($modules,$ctrler,$action)){
-            throw new BylinException([
+            throw new KbylinException([
                 '调度器无法获取完整的参数！',
                 $modules,$ctrler,$action
             ]);
@@ -54,7 +54,7 @@ class Dispatcher{
         is_array($modules) and $modules = implode('\\',$modules);
         empty($parameters) and $parameters = [];
 
-        \Bylin::recordStatus('execute_instance_build_begin');
+        \Kbylin::recordStatus('execute_instance_build_begin');
 
         $thisconvention = &self::$_conventions[self::class];
 
@@ -90,10 +90,10 @@ class Dispatcher{
                 self::$_result = $targetMethod->invoke($classInstance);
             }
         } else {
-            throw new BylinException($className, $action);
+            throw new KbylinException($className, $action);
         }
 
-        \Bylin::recordStatus('execute_end');
+        \Kbylin::recordStatus('execute_end');
         return self::$_result;
     }
 
@@ -101,7 +101,7 @@ class Dispatcher{
      * 获取传递给盖饭昂奋的参数
      * @param ReflectionMethod $targetMethod
      * @return array
-     * @throws BylinException
+     * @throws KbylinException
      */
     private static function fetchMethodArguments(ReflectionMethod $targetMethod){
         //获取输入参数
@@ -128,7 +128,7 @@ class Dispatcher{
             }elseif($param->isDefaultValueAvailable()){
                 $args[] =   $param->getDefaultValue();
             }else{
-                throw new BylinException("Method do not get valid  parameter with name of $parameterName !");
+                throw new KbylinException("Method do not get valid  parameter with name of $parameterName !");
             }
         }
         return $args;

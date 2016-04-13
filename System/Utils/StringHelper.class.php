@@ -6,14 +6,14 @@
  * Time: 17:31
  */
 namespace System\Utils;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
 class StringHelper {
 
     /**
      * 检验参数是否都是字母开头的标识符
      * @return bool
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function checkBeginWithChar(){
         $args = func_get_args();
@@ -29,7 +29,7 @@ class StringHelper {
                     return false;
                 }
             }else{
-                throw new BylinException('参数仅限于数组和字符串！');
+                throw new KbylinException('参数仅限于数组和字符串！');
             }
         }
         return true;

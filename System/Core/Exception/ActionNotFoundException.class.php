@@ -7,6 +7,6 @@
  */
 namespace System\Core\Exception;
 
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
-class ActionNotFoundException extends BylinException{}
+class ActionNotFoundException extends KbylinException{}

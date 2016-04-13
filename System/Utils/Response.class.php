@@ -5,7 +5,7 @@
  * Time: 16:02
  */
 namespace System\Utils;
-use System\Core\BylinException;
+use System\Core\KbylinException;
 
 /**
  * Class Response 输出控制类
@@ -53,7 +53,7 @@ class Response {
      * @param int $type AJAX返回数据格式
      * @param int $json_option 传递给json_encode的option参数
      * @return void
-     * @throws BylinException
+     * @throws KbylinException
      */
     public static function ajaxBack($data,$type=AJAX_JSON,$json_option=0) {
         self::cleanOutput();
@@ -65,7 +65,7 @@ class Response {
                 header('Content-Type:text/xml; charset=utf-8');
                 exit(XMLHelper::encodeHtml($data));
             default:
-                throw new BylinException('Invalid output!');
+                throw new KbylinException('Invalid output!');
         }
     }
 

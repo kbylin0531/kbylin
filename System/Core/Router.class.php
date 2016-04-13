@@ -6,8 +6,8 @@
  */
 namespace System\Core;
 use System\Traits\Crux;
-use System\Core\Router\BylinRouteParser;
-use System\Core\Router\BylinURICreater;
+use System\Core\Router\KbylinRouteParser;
+use System\Core\Router\KbylinURICreater;
 /**
  * Class Router 路由类
  * @package System\Core
@@ -20,8 +20,8 @@ class Router {
     const CONF_CONVENTION = [
         //Router类的驱动使用不同的驱动，但使用相同的配置
         'DRIVER_CLASS_LIST' => [
-            'parser'    => BylinRouteParser::class,
-            'creater'   => BylinURICreater::class,
+            'parser'    => KbylinRouteParser::class,
+            'creater'   => KbylinURICreater::class,
         ],
         'DRIVER_CONFIG_LIST' => [
             //驱动配置
