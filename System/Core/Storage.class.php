@@ -6,6 +6,7 @@
  */
 namespace System\Core;
 use System\Core\Storage\File;
+use System\Core\Storage\StorageInterface;
 use System\Traits\Crux;
 
 /**
@@ -14,6 +15,7 @@ use System\Traits\Crux;
  * @package System\Core
  */
 class Storage {
+
     use Crux;
 
     const CONF_NAME = 'storage';
@@ -26,14 +28,27 @@ class Storage {
     ];
 
     /**
+     * 获取驱动
+     * @param int|string|null $index 驱动器ID,null或者参数未设置时为null
+     * @return StorageInterface
+     */
+    private static function getDriver($index=null){
+        static $_instances = [];
+        if(!isset($_instances[$index])){
+            $_instances[$index] = self::getDriverInstance($index);
+        }
+        return $_instances[$index];
+    }
+
+    /**
      * 获取文件内容
      * @param string $filepath 文件路径
-     * @param string $file_encoding 文件内容实际编码
-     * @param string $output_encode 文件内容输出编码
+     * @param string $fileEncoding 文件内容实际编码
+     * @param string $translateEncode 文件内容输出编码
      * @return string|null 文件不存在时返回false
      */
-    public static function read($filepath,$file_encoding='UTF-8',$output_encode='UTF-8'){
-        return self::getDriverInstance()->read($filepath,$file_encoding,$output_encode);
+    public static function read($filepath, $fileEncoding='UTF-8', $translateEncode='UTF-8'){
+        return self::getDriver()->read($filepath,$fileEncoding,$translateEncode);
     }
 
     /**
@@ -43,8 +58,8 @@ class Storage {
      * @param string $write_encode 文件写入编码
      * @return int 返回写入的字节数目,失败时抛出异常
      */
-    public static function write($filepath,$content,$write_encode='UTF-8'){
-        return self::getDriverInstance()->write($filepath,$content,$write_encode);
+    public static function write($filepath,$content,$write_encode='UTF-8') {
+        return self::getDriver()->write($filepath,$content,$write_encode);
     }
 
     /**
@@ -56,7 +71,7 @@ class Storage {
      * @return string 返回写入内容
      */
     public static function append($filename,$content,$write_encode='UTF-8'){
-        return self::getDriverInstance()->append($filename,$content,$write_encode);
+        return self::getDriver()->append($filename,$content,$write_encode);
     }
 
     /**
@@ -66,7 +81,7 @@ class Storage {
      * @return boolean
      */
     public static function has($filename){
-        return self::getDriverInstance()->has($filename);
+        return self::getDriver()->has($filename);
     }
 
 
@@ -77,7 +92,7 @@ class Storage {
      * @return boolean
      */
     public static function unlink($filename){
-        return self::getDriverInstance()->unlink($filename);
+        return self::getDriver()->unlink($filename);
     }
 
     /**
@@ -87,8 +102,8 @@ class Storage {
      * @param string $filename  文件名
      * @return array|mixed
      */
-    public static function filemtime($filename){
-        return self::getDriverInstance()->filemtime($filename);
+    public static function mtime($filename){
+        return self::getDriver()->mtime($filename);
     }
 
     /**
@@ -97,7 +112,7 @@ class Storage {
      * @return mixed
      */
     public static function filesize($filename){
-        return self::getDriverInstance()->filesize($filename);
+        return self::getDriver()->size($filename);
     }
 
     /**
@@ -107,7 +122,7 @@ class Storage {
      * @return bool true成功删除，false删除失败
      */
     public static function removeFolder($dir,$recursion=false) {
-        return self::getDriverInstance()->removeFolder($dir,$recursion);
+        return self::getDriver()->removeFolder($dir,$recursion);
     }
 
     /**
@@ -118,7 +133,7 @@ class Storage {
      * @return bool
      */
     public static function makeFolder($fullpath,$auth = 0755){
-        return self::getDriverInstance()->makeFolder($fullpath,$auth);
+        return self::getDriver()->makeFolder($fullpath,$auth);
     }
     /**
      * 读取文件夹内容，并返回一个数组(不包含'.'和'..')
@@ -130,7 +145,7 @@ class Storage {
      * @return array
      */
     public static function readFolder($dir){
-        return self::getDriverInstance()->readFolder($dir);
+        return self::getDriver()->readFolder($dir);
     }
 
 }

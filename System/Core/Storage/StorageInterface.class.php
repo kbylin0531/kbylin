@@ -74,13 +74,13 @@ interface StorageInterface {
      * @param string $filepath 文件路径
      * @return int
      */
-    public function filemtime($filepath);
+    public function mtime($filepath);
     /**
      * 获取文件按大小
      * @param string $filepath 文件路径
      * @return int
      */
-    public function filesize($filepath);
+    public function size($filepath);
     /**
      * 读取文件夹内容，并返回一个数组(不包含'.'和'..')
      * array(
