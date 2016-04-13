@@ -39,7 +39,7 @@ class Memcache implements CacheInterface{
         'port'      => 11211,
         'expire'    => 0, // 0表示永不过期
         'prefix'    => '',
-        'timeout'   => 1, // 连接超时时间，默认1秒（单位：毫秒） 注意，如果设置为0将无法建立任何连接，并且会出现MemcachePool::get()的错误
+        'timeout'   => 1000, // 连接超时时间，默认1秒（单位：毫秒） 注意，如果设置为0将无法建立任何连接，并且会出现MemcachePool::get()的错误
         'persistent'=> true,
         'length'    => 0,
     ];
@@ -76,15 +76,15 @@ class Memcache implements CacheInterface{
         // 建立连接
         foreach ($hosts as $i => $host) {
             $port = isset($ports[$i]) ? $ports[$i] : $ports[0];
-            SEK::trace([$host, $port]);
+//            SEK::trace([$host, $port]);
             //添加成功时并不会测试是否可用
-            $result = $this->handler->addServer($host, $port, $this->options['persistent'], 1, $this->options['timeout']);
-            dump($result);
+            $result = $this->handler->addServer($host, $port, $this->options['persistent'], 1 , $this->options['timeout']);
+//            dump($result);
             if(!$result){
                 throw new BylinException('连接到Memcache服务器失败！');
             }
         }
-        dumpout($this->options,$this->handler,$this->handler->set('dsds', ''));
+//        dumpout($this->options,$this->handler,$this->handler->set('dsds', ''));
     }
 
     /**
@@ -132,8 +132,7 @@ class Memcache implements CacheInterface{
 
         $result = $this->handler->set($name, $value, 0, $expire);
 
-        dumpout($this->handler,$result);
-
+//        dumpout($this->handler,$result);
         if ($result) {//参数三 MEMCACHE_COMPRESSED
             if ($this->options['length'] > 0) {
                 // 记录缓存队列
