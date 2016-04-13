@@ -105,7 +105,7 @@ class Cache{
     public static function getDriver($index=null){
         static $cache = [];
         null === $index and $index = self::$index;
-        if(isset($cache[$index])){
+        if(!isset($cache[$index])){
             $cache[$index] = self::getDriverInstance($index);
             if(!call_user_func([$cache[$index],'available'])){
                 throw new DriverInavailableException($index);

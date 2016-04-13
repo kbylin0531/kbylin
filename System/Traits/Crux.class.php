@@ -79,9 +79,9 @@ trait Crux {
         }elseif(is_string($conf)){
             $conf = Config::readGlobal($conf);
         }
-        if(!is_array($conf)) throw new BylinException('failed to load configuration！');
+//        if(!is_array($conf)) throw new BylinException('failed to load configuration！');
 
-        SEK::merge(static::$_conventions[$classname],$conf);
+        is_array($conf) and SEK::merge(static::$_conventions[$classname],$conf);
 
         //默认的追加配置
         isset(static::$_conventions[$classname]['DRIVER_DEFAULT_INDEX'])    or static::$_conventions[$classname]['DRIVER_DEFAULT_INDEX'] = 0;

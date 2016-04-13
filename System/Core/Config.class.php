@@ -6,7 +6,9 @@
  * Time: 16:41
  */
 namespace System\Core;
+use System\Core\Config\ConfigInterface;
 use System\Core\Config\File;
+use System\Core\Exception\DriverInavailableException;
 use System\Core\Exception\ParameterInvalidException;
 use System\Traits\Crux;
 use System\Utils\SEK;
@@ -37,6 +39,24 @@ class Config {
      * @var array
      */
     protected static $confcache = [];
+
+
+    /**
+     * 获取驱动
+     * @param int|string $index
+     * @return ConfigInterface
+     * @throws DriverInavailableException
+     */
+    public static function getDriver($index=null){
+        static $cache = [];
+        if(isset($cache[$index])){
+            $cache[$index] = self::getDriverInstance($index);
+            if(!call_user_func([$cache[$index],'available'])){
+                throw new DriverInavailableException($index);
+            }
+        }
+        return $cache[$index];
+    }
 
 
     /**
@@ -83,7 +103,7 @@ class Config {
     /**
      * 创建配置系统全局缓存
      * @param array $cachedata 缓存的数据
-     * @param int $expire
+     * @param int $expire 缓存时间
      * @return bool 创建缓存是否成功
      * @throws BylinException
      */
@@ -91,31 +111,22 @@ class Config {
         if(!isset($cachedata,$expire)){
             self::checkInitialized(true);
             $config = self::getConventions();
+            if(!isset($config['CONFIG_CACHE_LIST'],$config['CONFIG_CACHE_EXPIRE'])){
+                //检验获取的配置项是否合理
+                throw new BylinException('配置项"CONFIG_CACHE_LIST"或"CONFIG_CACHE_EXPIRE"缺失！');
+            }
             null === $cachedata and $cachedata = self::getAllGlobal($config['CONFIG_CACHE_LIST']);
             null === $expire  and $expire = $config['CONFIG_CACHE_EXPIRE'];
         }
-        return self::getDriverInstance()->storeCache($cachedata,$expire);
+        return self::getDriver()->storeGlobalCache($cachedata,$expire);
     }
 
     /**
      * 加载配置缓存
-     * @param array|null $cachedata 配置缓存数据，设置了该值可以跳过遍历读取以提高效率
      * @return array|null
      */
-    public static function getGlobalCache(array $cachedata=null){
-        if(null !== $cachedata){
-            //全部的配置缓存，包括自身的配置
-            self::$confcache = $cachedata;
-        }else{
-            self::checkInitialized(true);
-            $instance = self::getDriverInstance();
-            //加载驱动内置的缓存
-            $cachedata  = $instance->loadCache();
-            if(null === (self::$confcache = $cachedata)){
-                self::setGlobalCache() and \Bylin::recordStatus('build cache success!');
-            }
-        }
-        return self::$confcache;
+    public static function getGlobalCache(){
+        return self::getDriver()->loadGlobalCache();
     }
 
     /**
@@ -125,8 +136,8 @@ class Config {
      * @param int $expire 以秒计算的缓存时间
      * @return bool 写入成功与否
      */
-    public static function writeCustomConfig($itemname,array $config,$expire=null){
-        return self::getDriverInstance()->write($itemname,$config,$expire);
+    public static function writeCustom($itemname,array $config,$expire=null){
+        return self::getDriver()->write($itemname,$config,$expire);
     }
 
     /**
@@ -135,11 +146,10 @@ class Config {
      * @param mixed|null $replacement 当指定的配置项不存在的时候的替代值
      * @return array|mixed 配置项存在的情况下返回array，否则返回参数$replacement的值
      */
-    public static function readCustomConfig($itemname,$replacement=null){
-        $result = self::getDriverInstance()->read($itemname);
+    public static function readCustom($itemname,$replacement=null){
+        $result = self::getDriver()->read($itemname);
         return null === $result?$replacement:$result;
     }
-
 
     /**
      * 获取配置信息
@@ -152,8 +162,6 @@ class Config {
      * @throws BylinException
      */
     public static function get($items=null,$replacement=null){
-        //检查配置缓存
-        self::checkInitialized(true);
 
         $configes = null;//配置分段，如果未分段则保持null的值
         //检查参数并设置分段
