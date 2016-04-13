@@ -5,18 +5,13 @@
  * Time: 9:06
  */
 namespace System\Core\Cache;
+use System\Common\DriverInterface;
 
 /**
  * Interface CacheInterface 缓存驱动接口
  * @package System\Library\Cache
  */
-interface CacheInterface {
-
-    /**
-     * 测试实现本接口的驱动是否可用
-     * @return bool
-     */
-    public function available();
+interface CacheInterface extends DriverInterface{
 
     /**
      * 读取缓存

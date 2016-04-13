@@ -21,13 +21,16 @@ class Config {
 
     use Crux;
 
-    const CONF_NAME = 'configure';
+    const CONF_NAME = 'config';
     const CONF_CONVENTION = [
         'DRIVER_DEFAULT_INDEX' => 0,
         'DRIVER_CLASS_LIST' => [
             File::class,
         ],
         'DRIVER_CONFIG_LIST' => [
+            [
+                'CUSTOM_CONF_PATH'  => RUNTIME_PATH.'Config/', // 用户自定义配置目录
+            ]
         ],
         'CONFIG_CACHE_LIST'     => [],
         'CONFIG_CACHE_EXPIRE'   => 0,//0表示永不过期
@@ -50,7 +53,7 @@ class Config {
      */
     public static function getDriver($index=null){
         static $cache = [];
-        if(isset($cache[$index])){
+        if(!isset($cache[$index])){
             $cache[$index] = self::getDriverInstance($index);
             if(!call_user_func([$cache[$index],'available'])){
                 throw new DriverInavailableException($index);
@@ -58,7 +61,6 @@ class Config {
         }
         return $cache[$index];
     }
-
 
     /**
      * <不存在依赖关系>
@@ -68,19 +70,19 @@ class Config {
      * @return array|mixed 配置项存在的情况下返回array，否则返回参数$replacement的值
      * @throws ParameterInvalidException
      */
-    public static function readGlobal($itemname){
+    public static function readGlobal($itemname) {
         $type = gettype($itemname);
-        if('array' === $type){
+        if ('array' === $type) {
             $result = [];
             foreach($itemname as $item){
                 $temp = self::readGlobal($item);
                 null !== $temp and SEK::merge($result,$temp);
             }
-        }elseif('string' === $type){
+        } elseif('string' === $type) {
             $path = CONFIG_PATH."{$itemname}.php";
             if(!is_file($path)) return null;
             $result = include $path;
-        }else{
+        } else {
             throw new ParameterInvalidException($itemname);
         }
         return $result;
@@ -93,6 +95,11 @@ class Config {
      * @throws ParameterInvalidException
      */
     public static function readAllGlobal($list=null){
+        if(null === $list){
+            self::checkInitialized(true);
+            $config = self::getConventions();
+            $list = $config['CONFIG_CACHE_LIST'];
+        }
         if(is_string($list)) $list = explode(',',$list);
         //无法读取驱动内部的缓存或者缓存不存在  => 重新读取配置并生成缓存
         foreach($list as $item){
@@ -128,28 +135,6 @@ class Config {
      */
     public static function getGlobalCache(){
         return Cache::get(self::CACHE_ID);
-    }
-
-    /**
-     * 写入自定义配置项
-     * @param string $itemname 自定义配置项名称
-     * @param array $config 配置数组
-     * @param int $expire 以秒计算的缓存时间
-     * @return bool 写入成功与否
-     */
-    public static function writeCustom($itemname,array $config,$expire=null){
-        return self::getDriver()->write($itemname,$config,$expire);
-    }
-
-    /**
-     * 读取自定义配置
-     * @param string $itemname 自定义配置项名称
-     * @param mixed|null $replacement 当指定的配置项不存在的时候的替代值
-     * @return array|mixed 配置项存在的情况下返回array，否则返回参数$replacement的值
-     */
-    public static function readCustom($itemname,$replacement=null){
-        $result = self::getDriver()->read($itemname);
-        return null === $result?$replacement:$result;
     }
 
     /**
@@ -199,6 +184,29 @@ class Config {
         }
         return $rtn;
     }
+
+    /**
+     * 写入自定义配置项
+     * @param string $itemname 自定义配置项名称
+     * @param array $config 配置数组
+     * @param int $expire 以秒计算的缓存时间
+     * @return bool 写入成功与否
+     */
+    public static function writeCustom($itemname,array $config,$expire=null){
+        return self::getDriver()->write($itemname,$config,$expire);
+    }
+
+    /**
+     * 读取自定义配置
+     * @param string $itemname 自定义配置项名称
+     * @param mixed|null $replacement 当指定的配置项不存在的时候的替代值
+     * @return array|mixed 配置项存在的情况下返回array，否则返回参数$replacement的值
+     */
+    public static function readCustom($itemname,$replacement=null){
+        $result = self::getDriver()->read($itemname);
+        return null === $result?$replacement:$result;
+    }
+
 
     /**
      * 设置临时配置项

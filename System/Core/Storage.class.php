@@ -30,7 +30,7 @@ class Storage {
      * @param string $filepath 文件路径
      * @param string $file_encoding 文件内容实际编码
      * @param string $output_encode 文件内容输出编码
-     * @return string|false 文件不存在时返回false
+     * @return string|null 文件不存在时返回false
      */
     public static function read($filepath,$file_encoding='UTF-8',$output_encode='UTF-8'){
         return self::getDriverInstance()->read($filepath,$file_encoding,$output_encode);

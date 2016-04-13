@@ -6,13 +6,14 @@
  * Time: 20:01
  */
 namespace System\Core\Config;
+use System\Common\DriverInterface;
 
 /**
  * Interface ConfigInterface 配置处理接口
  * 继承该借口的类将使用其实现的方法读取和写入配置
  * @package System\Core\Config
  */
-interface ConfigInterface {
+interface ConfigInterface extends DriverInterface{
 
     /**
      * 读取单个的配置
@@ -30,20 +31,5 @@ interface ConfigInterface {
      */
     public function write($item,array $config,$cover=false);
 
-    /**
-     * 将配置内容存储到缓存中
-     * @param array $config 配置数组
-     * @param int $expire 以秒计算的缓存时间,缓存时间为0表示永不过期
-     * @return bool 缓存是否成功
-     */
-    public function storeGlobalCache(array $config,$expire=0);
-
-    /**
-     * 加载缓存的配置信息并返回
-     * @param array|null $confcache 外部的配置缓存（有失不使用该驱动类自身的配置缓存的情况下），
-     *                              非null时将参数一的配置作为实际的缓存配置
-     * @return array|null 返回配置缓存
-     */
-    public function loadGlobalCache(array $confcache=null);
 
 }

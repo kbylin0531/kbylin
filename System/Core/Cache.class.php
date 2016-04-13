@@ -37,11 +37,11 @@ class Cache{
                 'data_compress' => false,
             ],
             [
-                'host'      => '127.0.0.1',
+                'host'      => 'localhost',
                 'port'      => 11211,
                 'expire'    => 0,
                 'prefix'    => '',
-                'timeout'   => 0, // 超时时间（单位：毫秒）
+                'timeout'   => 1000, // 超时时间（单位：毫秒）
                 'persistent'=> true,
                 'length'    => 0,
             ],
