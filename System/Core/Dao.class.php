@@ -96,7 +96,7 @@ class Dao {
 
     /**
      * 指向当前的PDOStatement对象
-     * @var \PDOStatement
+     * @var PDOStatement
      */
     private $curStatement = null;
     /**
@@ -140,6 +140,14 @@ class Dao {
         }
     }
 
+    /**
+     * 获取原生的PDO继承对象
+     * @return DaoAbstract
+     */
+    public function getDriver(){
+        return $this->driver;
+    }
+
 /********************************* 基本的查询功能 ***************************************************************************************/
     /**
      * 简单地查询一段SQL，并且将解析出所有的结果集合
@@ -150,13 +158,13 @@ class Dao {
      * @return array|false 返回array类型表述查询结果，返回false表示查询出错，可能是数据表不存在等数据库返回的错误信息
      */
     public function query($sql,array $inputs=null){
-        if(!$inputs){
+        if(null === $inputs){
             //直接使用PDO的查询功能
             try{
                 $statement = $this->driver->query($sql);//返回PDOstatement,失败时返回false(或者抛出异常)，视错误的处理方式而定
                 if(false !== $statement){
                     //query成功时返回PDOStatement对象
-                    return $statement->fetchAll();
+                    return $statement->fetchAll();//成功返回
                 }else{
                     $this->setPdoError();
                 }
@@ -185,13 +193,15 @@ class Dao {
      *                   返回false表示了错误，可以用getError获取错误信息
      */
     public function exec($sql,array $inputs=null){
-        if(!$inputs){
+        if(null === $inputs){
+            //调用PDO的查询功能
             try{
                 $rst = $this->driver->exec($sql);
-                if(false !== $rst){
+                if(false === $rst){
+                    $this->setPdoError();
+                }else{
                     return $rst;
                 }
-                $this->setPdoError();
             }catch (\PDOException $e){
                 $this->error = $e->getMessage();
             }
@@ -222,7 +232,7 @@ class Dao {
      *  </note>
      * @param string $sql 查询的SQL，当参数二指定的ID存在，只有在参数一布尔值不为false时，会进行真正地prepare
      * @param array $option prepare方法参数二
-     * @return PDOStatement|null 返回prepare返回的对象，如果失败则返回null
+     * @return $this 返回prepare返回的对象，如果失败则返回null
      */
     public function prepare($sql,array $option=[]){
         try{
@@ -232,7 +242,7 @@ class Dao {
             /* 当表不存在或者字段不存在时候 */
             $this->setPdoError($e->getMessage());
         }
-        return $this->curStatement;
+        return $this;
     }
 
     /**
@@ -241,12 +251,15 @@ class Dao {
      *                  一个元素个数和将被执行的 SQL 语句中绑定的参数一样多的数组。所有的值作为 PDO::PARAM_STR 对待。
      *                  不能绑定多个值到一个单独的参数,如果在 input_parameters 中存在比 PDO::prepare() 预处理的SQL 指定的多的键名，
      *                  则此语句将会失败并发出一个错误。(这个错误在PHP 5.2.0版本之前是默认忽略的)
-     * @param \PDOStatement|null $statement 该参数未设定或者为null时使用的PDOStatement为上次prepare的对象
-     * @return bool|null bool值表示执行结果，当不存在执行对象时返回null，可以通过rowCount方法获取受到影响行数，或者getError获取错误信息
+     * @param PDOStatement|null $statement 该参数未设定或者为null时使用的PDOStatement为上次prepare的对象
+     * @return bool|false bool值表示执行结果，当不存在执行对象时返回null，可以通过rowCount方法获取受到影响行数，或者getError获取错误信息
      */
-    public function execute(array $input_parameters = null, \PDOStatement $statement=null){
+    public function execute(array $input_parameters = null, PDOStatement $statement=null){
         null !== $statement and $this->curStatement = $statement;
-        if(!$this->curStatement) return null;
+        if(!$this->curStatement or !($this->curStatement instanceof PDOStatement)){
+            $this->setError('No available PDOStatement in execute!');
+            return false;
+        }
 
         try{
             //出错时设置错误信息，注：PDOStatement::execute返回bool类型的结果
@@ -301,18 +314,22 @@ class Dao {
 
     /**
      * 返回PDO驱动或者上一个PDO语句对象上发生的错误的信息（具体驱动的错误号和错误信息）
+     * 注意：调用此函数后会将错误信息清空
      * @return string 返回错误信息字符串，没有错误发生时返回空字符串
      */
     public function getError(){
-        return $this->error;
+        $temp =  $this->error;
+        $this->error = null;
+        return $temp;
     }
 
     /**
      * 清除错误标记以进行下一次查询
+     * @param string $error 错误信息
      * @return void
      */
-    public function cleanError(){
-        $this->error = null;
+    public function setError($error){
+        $this->error = $error;
     }
 
     /**
@@ -327,7 +344,7 @@ class Dao {
      * @param null|string $errorInfo 设置错误信息，未设置时自动获取
      * @return bool 返回true表示发生了错误并成功设置错误信息，返回false表示模块未捕捉到错误
      */
-    private function setPdoError($errorInfo=null) {
+    private function setPdoError($errorInfo=null){
         null === $errorInfo and $errorInfo = $this->getPdoError();
         return ($this->error = $errorInfo)===null?false:true;
     }
@@ -402,14 +419,13 @@ class Dao {
      *              if (!$stmt->nextRowset()) break;
      *          } while (true);
      * </note>
-     * @param \PDOStatement|null $statement
+     * @param PDOStatement|null $statement
      * @return bool 成功时返回 TRUE， 或者在失败时返回 FALSE
      */
     public function closeCursor($statement=null){
         isset($statement) and $this->curStatement = $statement;
         return $this->curStatement->closeCursor();
     }
-
 
     /**
      * 获取预处理语句包含的信息
