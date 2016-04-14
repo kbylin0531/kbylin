@@ -13,7 +13,7 @@ class Z {
 
     public function dump(){
         echo '<pre>';
-        var_dump(static::$_conventions,static::$_instances);
+        var_dump(static::$_conventions,static::$classes);
     }
 
 }

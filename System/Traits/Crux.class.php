@@ -6,6 +6,7 @@
  */
 namespace System\Traits;
 use StdClass;
+use System\Core\Exception\Driver\DriverNotFoundException;
 use System\Core\KbylinException;
 use System\Core\Config;
 use System\Utils\SEK;
@@ -44,7 +45,7 @@ trait Crux {
      * 实例数组
      * @var StdClass[]
      */
-    private static $_instances = [];
+    private static $classes = [];
 
     /**
      * 初始化本类配置
@@ -79,8 +80,6 @@ trait Crux {
         }elseif(is_string($conf)){
             $conf = Config::readGlobal($conf);
         }
-//        if(!is_array($conf)) throw new KbylinException('failed to load configuration！');
-
         is_array($conf) and SEK::merge(static::$_conventions[$classname],$conf);
 
         //默认的追加配置
@@ -114,32 +113,45 @@ trait Crux {
         isset(static::$_conventions[static::class]) or static::initialize($conf);
 
         //实例不存在时候创建
-        isset(self::$_instances[static::class]) or self::$_instances[static::class] = [];
+        isset(self::$classes[static::class]) or self::$classes[static::class] = [];
 
-        //短名
-        $thisconvention = &static::$_conventions[static::class];
-        $thisinstances = &static::$_instances[static::class];
-
-        null === $index and $index = $thisconvention['DRIVER_DEFAULT_INDEX'];
+        $thisinstances = &static::$classes[static::class];
 
         if(!isset($thisinstances[$index])){
-            if(!isset($thisconvention['DRIVER_CLASS_LIST'][$index])) {
-                throw new KbylinException('找不到指定的驱动！');
-            }
-            //获取驱动类名称和构造参数
-            $driverclass = $thisconvention['DRIVER_CLASS_LIST'][$index];
-            if(isset($thisconvention['DRIVER_CONFIG_LIST'][$index])){
-                $driverconfig = $thisconvention['DRIVER_CONFIG_LIST'][$index];
-            }else{
-                $first = reset($thisconvention['DRIVER_CONFIG_LIST']);//参阅reset返回值
-                $driverconfig = false === $first?null:$first;
-            }
+            $info = self::getDriverInfo($index);
+            $driverclass = $info[0];
 
-            $thisinstances[$index] = new $driverclass($driverconfig);
+            $thisinstances[$index] = new $driverclass($info[1]);
         }
 
         return $thisinstances[$index];
     }
+
+    /**
+     * 根据角标获取驱动类名称[0]和驱动器配置构成的数组[1]
+     * @param int|string|null $index
+     * @return array
+     * @throws KbylinException
+     */
+    public static function getDriverInfo($index=null) {
+        $thisconvention = static::getConventions();
+        null === $index and $index = $thisconvention['DRIVER_DEFAULT_INDEX'];
+
+        if(!isset($thisconvention['DRIVER_CLASS_LIST'][$index])) {
+            throw new DriverNotFoundException(['Index'=>$index,'config'=>$thisconvention['DRIVER_CLASS_LIST']]);
+        }
+
+        if(isset($thisconvention['DRIVER_CONFIG_LIST'][$index])){
+            $driverconfig = $thisconvention['DRIVER_CONFIG_LIST'][$index];
+        }else{
+            $first = reset($thisconvention['DRIVER_CONFIG_LIST']);//参阅reset返回值
+            $driverconfig = false === $first?null:$first;
+        }
+
+        //获取驱动类名称和构造参数
+        return [$thisconvention['DRIVER_CLASS_LIST'][$index],$driverconfig];
+    }
+
 
     /**
      * 获取本类的惯例配置

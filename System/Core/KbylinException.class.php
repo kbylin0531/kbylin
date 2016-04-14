@@ -6,4 +6,9 @@
  */
 namespace System\Core;
 
-class KbylinException extends \Exception{}
+class KbylinException extends \Exception{
+    public function __construct(){
+        $args = func_get_args();
+        $this->message = var_export($args,true);
+    }
+}

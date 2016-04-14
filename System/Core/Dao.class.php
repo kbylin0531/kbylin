@@ -82,80 +82,64 @@ class Dao {
         ],
     ];
 
-
-    const ACTION_INSERT = 0;
-    const ACTION_UPDATE = 1;
-    const ACTION_SELECT = 2;
-    const ACTION_REMOVE = 3;
-
     /**
      * 自身实例
-     * @var Dao
+     * @var Dao[]
      */
-    protected static $_instance = null;
+    private static $_instances = null;
+    
 
     /**
      * @var DaoAbstract
      */
-    protected $driver = null;
+    private $driver = null;
 
     /**
      * 指向当前的PDOStatement对象
      * @var \PDOStatement
      */
-    protected $curStatement = null;
+    private $curStatement = null;
     /**
      * SQL执行发生的错误信息
      * @var string|null
      */
-    protected $error = null;
-
-
-    protected $_option = [
-        'distinct'  => false,
-        'top'       => null,
-        'fields'    => ' * ',//查询的表域情况
-        'table'     => null,//
-        'join'      => null,//join部分，需要带上join关键字
-        'where'     => null,//where部分
-        'group'     => null,//分组 需要带上group by
-        'having'    => null,//having子句，依赖$group存在，需要带上having部分
-        'order'     => null,//排序，不需要带上order by
-        'limit'     => null,
-        'offset'    => null,
-    ];
-    protected $_inputs = [];
-
-
-    /**
-     * 获取所有可用的数据库PDO驱动
-     * 如：'mysql'或者'odbc'
-     * @return array 如"['mysql','odbc',]"
-     */
-    public static function getAvailableDrivers(){
-        return PDO::getAvailableDrivers();
-    }
+    private $error = null;
 
     /**
      * 获取Dao实例
      * @param int|string|array $index int或者
+     * @param array|null $config 自定义配置
      * @return Dao
      */
-    public static function getInstance($index=null){
-        self::$_instance = new Dao($index);
-        return self::$_instance;
+    public static function getInstance($index=null,array $config = null){
+        if(null !== $config){
+            //自己设定的数据库访问
+            $key = md5(serialize($config));
+            if(!isset(self::$_instances[$key])){
+                self::$_instances[$key] = new Dao($index,$config);
+            }
+            return self::$_instances[$key];
+        }elseif(!isset(self::$_instances[$index])){
+            self::$_instances[$index] = new Dao($index);
+        }
+        return self::$_instances[$index];
     }
 
     /**
      * Dao constructor.
-     * @param array|int|string|null $index
+     * @param int|string $index 驱动器角标
+     * @param array|null $config 自定义配置，可以作为自定义配置或者是对固定值的修正
      */
-    protected function __construct($index=null){
-        self::checkInitialized(true);
-        $this->driver = self::getDriverInstance($index);
+    private function __construct($index=null,array $config = null){
+        if(is_array($config)){
+            $info = self::getDriverInfo($index);
+            $drivername = $info[0];
+            $this->driver = new $drivername($config);
+        }else{
+            $this->driver = self::getDriverInstance($index);
+        }
     }
 
-//TODO:
 /********************************* 基本的查询功能 ***************************************************************************************/
     /**
      * 简单地查询一段SQL，并且将解析出所有的结果集合
@@ -227,7 +211,6 @@ class Dao {
     }
 
 
-//TODO:
 /********************************* 高级查询功能 ***************************************************************************************/
 
     /**
@@ -316,8 +299,6 @@ class Dao {
     }
 
 
-    /*TODO:错误信息获取 ***************************************************************************************/
-
     /**
      * 返回PDO驱动或者上一个PDO语句对象上发生的错误的信息（具体驱动的错误号和错误信息）
      * @return string 返回错误信息字符串，没有错误发生时返回空字符串
@@ -346,7 +327,7 @@ class Dao {
      * @param null|string $errorInfo 设置错误信息，未设置时自动获取
      * @return bool 返回true表示发生了错误并成功设置错误信息，返回false表示模块未捕捉到错误
      */
-    protected function setPdoError($errorInfo=null) {
+    private function setPdoError($errorInfo=null) {
         null === $errorInfo and $errorInfo = $this->getPdoError();
         return ($this->error = $errorInfo)===null?false:true;
     }
@@ -444,14 +425,6 @@ class Dao {
         return ob_get_clean();// 相当于ob_get_contents() 和 ob_end_clean()
     }
 
-    /**
-     * 字段名称转换
-     * @param string $fieldName 字段名称
-     * @return string
-     */
-    public function espace($fieldName){
-        return $this->driver->escape($fieldName);
-    }
 
 /************************************** 驱动实现扩展方法 ******************************************************************************************/
 
@@ -465,141 +438,6 @@ class Dao {
     }
 
 /************************************** 链式扩展方法 ******************************************************************************************/
-
-    /**
-     * 设置要操作的表
-     * @param string $tablename 设置当前操作的数据表的名称
-     * @return $this
-     */
-    public function table($tablename){
-        $this->_option['table'] = $tablename;
-        return $this;
-    }
-
-
-    /**
-     * 设置要操作的表
-     * @param string $having
-     * @return $this
-     */
-    public function having($having){
-        $this->_option['having'] = $having;
-        return $this;
-    }
-
-    /**
-     * 设置查询或修改的字段
-     * @param string|array $fields
-     * @return $this
-     */
-    public function fields($fields){
-        $this->_option['fields'] = $fields;
-        return $this;
-    }
-
-    /**
-     * 设置where
-     * @param string|array $where
-     * @return $this
-     */
-    public function where($where){
-        $this->_option['where'] = $where;
-        return $this;
-    }
-
-    /**
-     * @param string|array $join
-     * @return $this
-     */
-    public function join($join){
-        $this->_option['join'] = $join;
-        return $this;
-    }
-
-    /**
-     * 设置group by
-     * @param string|array $group
-     * @return $this
-     */
-    public function group($group){
-        $this->_option['group'] = $group;
-        return $this;
-    }
-
-    /**
-     * 设置order by
-     * @param string|array $order
-     * @return $this
-     */
-    public function order($order){
-        $this->_option['order'] = $order;
-        return $this;
-    }
-
-    /**
-     * 设置top部分（部分数据库有效）
-     * @param int $num
-     * @return $this
-     */
-    public function top($num){
-        $this->_option['top'] = intval($num);
-        return $this;
-    }
-
-    /**
-     * 各个数据库中表现一致
-     * @param bool $dist 是否进行distinct
-     * @return $this
-     */
-    public function distinct($dist=true){
-        $this->_option['distinct'] = $dist;
-        return $this;
-    }
-
-    /**
-     * 参阅mysql中的'limit X,Y'
-     * 各个数据库中的实现不一致
-     * @param int $limit 返回的数量限制
-     * @param null|int $offset 偏移，null时表示不设置
-     * @return $this
-     */
-    public function limit($limit,$offset=null){
-        $this->_option['offset'] = $offset;
-        $this->_option['limit'] = $limit;
-        return $this;
-    }
-
-    /**
-     * 编译组件成适应当前数据库的SQL字符串
-     * @param int $actiontype 操作类型
-     * @return string 不完整的组件传入时返回null
-     */
-    public function compile($actiontype){
-        if(!isset($this->_option['table'])) return null;
-        $sql = $this->driver->compile($this->_option,$actiontype);
-        $this->reset();
-        return $sql;
-    }
-
-    /**
-     * 重置结果集合
-     * @return void
-     */
-    public function reset(){
-        $this->_option = [
-            'distinct'  => false,
-            'top'       => null,
-            'fields'    => ' * ',//查询的表域情况
-            'table'     => null,//
-            'join'      => null,//join部分，需要带上join关键字
-            'where'     => null,//where部分
-            'group'     => null,//分组 需要带上group by
-            'having'    => null,//having子句，依赖$group存在，需要带上having部分
-            'order'     => null,//排序，不需要带上order by
-            'limit'     => null,
-            'offset'    => null,
-        ];
-    }
 
 
 
@@ -630,19 +468,12 @@ class Dao {
      */
     public function create($tablename=null,array $fieldsMap=null){
 
-        if(null === $tablename){
-            $sql = $this->compile(self::ACTION_INSERT);
-
-            return ;
-        }
-
         $fields = $placeholder = '';
         $sql = null;
         $bind  = [];
         $flag = true;//标记是否进行插入形式判断
 
         $dao  = $this;
-
 
         foreach($fieldsMap as $fieldName=>$fieldValue){
             $colnm = $fieldName;
@@ -716,12 +547,6 @@ class Dao {
      * @throws KbylinException
      */
     public function select($tablename=null,$fields=null,$whr=null){
-
-        if(null === $tablename){
-            $sql = $this->compile(self::ACTION_SELECT);
-            return $this->query($sql,$this->_inputs);
-        }
-
         $bind = null;
         //设置选取字段
         if(null === $fields){
@@ -776,7 +601,7 @@ class Dao {
      * @return array
      * @throws KbylinException
      */
-    protected function makeFieldBind($fieldName,$fieldValue,$operator='=',$translate=false){
+    private function makeFieldBind($fieldName,$fieldValue,$operator='=',$translate=false){
         $fieldName = trim($fieldName,' :[]');
         $bindFieldName = null;
         if(false !== strpos($fieldName,'.')){
@@ -883,8 +708,4 @@ class Dao {
         );
         return $result;
     }
-
-
-
-
 }

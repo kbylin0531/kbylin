@@ -19,6 +19,14 @@ final class SEK {
      */
     protected static $_traces = [];
 
+    /**
+     * 获取所有可用的数据库PDO驱动
+     * 如：'mysql'或者'odbc'
+     * @return array 如"['mysql','odbc',]"
+     */
+    public static function getAvailablePdoDrivers(){
+        return \PDO::getAvailableDrivers();
+    }
 
     /**
      * 转换成PHP处理文件系统时所用的编码

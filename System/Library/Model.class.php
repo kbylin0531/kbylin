@@ -31,11 +31,12 @@ class Model {
     /**
      * 获取数据访问接口对象
      * @param null|int|string $index
+     * @param $config
      * @return \System\Core\Dao
      */
-    protected function getDao($index=null){
+    protected function getDao($index=null,array $config=null){
         if(!isset($this->dao[$index])){
-            $this->dao[$index] = Dao::getInstance($index);
+            $this->dao[$index] = Dao::getInstance($index,$config);
         }
         return $this->dao[$index];
     }
