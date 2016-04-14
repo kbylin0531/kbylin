@@ -70,6 +70,8 @@ final class Kbylin {
         //函数包列表
         'FUNC_PACK_LIST'    => [],
         'FUNC_PATH'         => 'Func/',//相对于BASE_PATH
+
+        'REQUEST_PARAM_NAME'    => '_PARAMS_',
     ];
     /**
      * 类库的映射
@@ -132,6 +134,16 @@ final class Kbylin {
         null !== $config and
             $this->_convention = array_merge($this->_convention,$config);//合并用户自定义配置和系统封默认配置
         date_default_timezone_set('Asia/Shanghai') or die('Date format set time zone failed!');
+
+        //分解请求参数
+        if(isset($this->_convention['REQUEST_PARAM_NAME'])){
+            $temp = [];
+            parse_str($this->_convention['REQUEST_PARAM_NAME'],$temp);
+            $_POST = array_merge($_POST,$temp);
+            $_REQUEST = array_merge($_REQUEST,$temp);
+            $_GET = array_merge($_GET,$temp);
+            unset($this->_convention['REQUEST_PARAM_NAME']);
+        }
 
         //目录常量
         define('BASE_PATH',str_replace('\\','/',dirname(__DIR__)).'/');

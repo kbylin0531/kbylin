@@ -6,3 +6,23 @@ _parent
 _self
 _top
 framename
+
+
+
+
+
+引导至本项目
+//分解请求参数
+if(isset($_REQUEST['_PARAMS_'])){
+    $temp = array();
+    parse_str($_REQUEST['_PARAMS_'],$temp);
+    $_POST = array_merge($_POST,$temp);
+    $_REQUEST = array_merge($_REQUEST,$temp);
+    $_GET = array_merge($_GET,$temp);
+    unset($_REQUEST['_PARAMS_']);
+}
+//设计了标记跳转
+if(isset($_REQUEST['gokbylin']) and $_REQUEST['gokbylin']){
+    include '../Kbylin/index.php';
+    exit();
+}
