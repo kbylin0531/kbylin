@@ -74,8 +74,10 @@ final class Kbylin {
         'REQUEST_PARAM_NAME'    => '_PARAMS_',
     ];
     /**
-     * 类库的映射
-     * 完整类名称 => 类文件的完整路径
+     * 类名与类路径的映射数组
+     * array (
+     *  完整类名称 => 类文件的完整路径
+     * )
      * @var array
      */
     protected $_classes = [];
@@ -283,15 +285,25 @@ final class Kbylin {
                 $file = BASE_PATH . "{$clsnm}.class.php";
                 if(is_file($file)) include_once $file;
             }else{
-                $file       =   BASE_PATH.str_replace('\\', '/', $clsnm).'.class.php';
-                if(is_file($file) ) {
-                    //window下对is_file对文件名称不区分大小写，故这里需要作检测
-                    if (!(IS_WIN and false === strpos(str_replace('/', '\\', realpath($file)), "{$clsnm}.class.php") )){
-                        include_once $this->_classes[$clsnm] = $file;
-                    }
+                $path = $this->fetchPathByFullname($clsnm);
+                if(is_file($path) and false !== strpos($path, "{$clsnm}.class.php")){
+                    include_once $this->_classes[$clsnm] = $path;
                 }
             }
         }
+    }
+
+    /**
+     * 从类名称中解析出类文件的绝对路径
+     * @param string $classname
+     * @return string
+     */
+    public function fetchPathByFullname($classname){
+        if(!isset($this->_classes[$classname])){
+            $this->_classes[$classname] = BASE_PATH.str_replace('\\', '/', $classname).'.class.php';
+            IS_WIN and $this->_classes[$classname] = str_replace('/', '\\', realpath($this->_classes[$classname]));
+        }
+        return $this->_classes[$classname];
     }
 
     /**
