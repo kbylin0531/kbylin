@@ -5,8 +5,7 @@
  * Date: 2016/3/4
  * Time: 22:46
  */
-namespace System\Core\Model\Dao;
-use System\Core\Dao\DaoAbstract;
+namespace System\Core\Dao;
 
 class OCI extends DaoAbstract {
 

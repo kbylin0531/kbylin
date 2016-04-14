@@ -5,9 +5,7 @@
  * Date: 2016/3/2
  * Time: 10:38
  */
-namespace System\Core\Model\Dao;
-
-use System\Core\Dao\DaoAbstract;
+namespace System\Core\Dao;
 
 class SQLServer extends DaoAbstract {
 
@@ -33,24 +31,29 @@ class SQLServer extends DaoAbstract {
      * @return string
      */
     public function buildDSN(array $config){
-        $dsn  =   'sqlsrv:Server='.$config['hostname'];
-        if(isset($config['dbname'])){
-            $dsn = ";Database={$config['dbname']}";
+//        dumpout($config);
+        $dsn  =   "sqlsrv:Database={$config['dbname']};Server={$config['host']}";
+        if(!empty($config['port'])) {
+            $dsn  .= ','.$config['port'];
         }
-        if(!empty($config['hostport'])) {
-            $dsn  .= ','.$config['hostport'];
-        }
+//        $dsn  =   "sqlsrv:Server={$config['host']}";
+//        if(isset($config['dbname'])){
+//            $dsn .= ";Database={$config['dbname']}";
+//        }
+//        if(!empty($config['port'])) {
+//            $dsn  .= ','.$config['port'];
+//        }
         return $dsn;
     }
 
 
     /**
      * 编译组件成适应当前数据库的SQL字符串
-     * @param array $components  复杂SQL的组成部分
+     * @param array $comps  复杂SQL的组成部分
      * @param int $actiontype 操作类型
      * @return string
      */
-    public function compile(array $components,$actiontype){
+    public function compile(array $comps,$actiontype){
         $components = array(
             'distinct'=>'',
             'top' => '',
@@ -61,11 +64,11 @@ class SQLServer extends DaoAbstract {
             'having'=>'',//having子句，依赖$group存在，需要带上having部分
             'order'=>'',//排序，不需要带上order by
         );
-        $components = array_merge($components,$compos);
+        $components = array_merge($components,$comps);
         if($components['distinct']){//为true或者1时转化为distinct关键字
             $components['distinct'] = 'distinct';
         }
-        $sql = " select \r\n {$components['distinct']} \r\n {$components['top']} \r\n {$components['fields']} \r\n  from \r\n  {$fromtable} \r\n ";
+        $sql = " select \r\n {$components['distinct']} \r\n {$components['top']} \r\n {$components['fields']} \r\n  from \r\n  {$components['table']} \r\n ";
 
         //group by，having 加上关键字(对于如group by的组合关键字，只要判断第一个是否存在)如果不是以该关键字开头  则自动添加
         if($components['where']){
@@ -90,6 +93,8 @@ class SQLServer extends DaoAbstract {
         $flag = true;//标记是否需要再次设置order by
 
         //是否偏移
+        $offset = $components['offset'];
+        $limit = $components['limit'];
         if(NULL !== $offset && NULL !== $limit){
             $outerOrder = ' order by ';
             if(!empty($components['order'])){

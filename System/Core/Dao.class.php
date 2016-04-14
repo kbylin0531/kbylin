@@ -9,8 +9,8 @@ namespace System\Core;
 use PDO;
 use System\Core\Dao\DaoAbstract;
 use System\Core\Dao\MySQL;
-use System\Core\Model\Dao\OCI;
-use System\Core\Model\Dao\SQLServer;
+use System\Core\Dao\OCI;
+use System\Core\Dao\SQLServer;
 use System\Traits\Crux;
 use PDOStatement;
 
@@ -48,8 +48,6 @@ class Dao {
                 'dsn'       => null,//默认先检查差DSN是否正确,直接写dsn而不设置其他的参数可以提高效率，也可以避免潜在的bug
                 'options'   => [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,//默认异常模式
-                    PDO::ATTR_AUTOCOMMIT => true,//为false时，每次执行exec将不被提交
-                    PDO::ATTR_EMULATE_PREPARES => false,//不适用模拟预处理
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,//结果集返回形式
                 ],
             ],
@@ -64,8 +62,6 @@ class Dao {
                 'dsn'       => null,//默认先检查差DSN是否正确,直接写dsn而不设置其他的参数可以提高效率，也可以避免潜在的bug
                 'options'   => [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,//默认异常模式
-                    PDO::ATTR_AUTOCOMMIT => true,//为false时，每次执行exec将不被提交
-                    PDO::ATTR_EMULATE_PREPARES => false,//不适用模拟预处理
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,//结果集返回形式
                 ],
             ],
@@ -80,8 +76,6 @@ class Dao {
                 'dsn'       => null,//默认先检查差DSN是否正确,直接写dsn而不设置其他的参数可以提高效率，也可以避免潜在的bug
                 'options'   => [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,//默认异常模式
-                    PDO::ATTR_AUTOCOMMIT => true,//为false时，每次执行exec将不被提交
-                    PDO::ATTR_EMULATE_PREPARES => false,//不适用模拟预处理
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,//结果集返回形式
                 ],
             ],

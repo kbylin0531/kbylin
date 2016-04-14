@@ -18,8 +18,6 @@ class General {
         defined('STATIC_URI') or define('STATIC_URI',PUBLIC_URI.'static/');
         defined('ASSETS_URI') or define('ASSETS_URI',PUBLIC_URI.'assets/');
 
-
-
         $classname = static::class;
         $pos = strrpos($classname,'\\');
         $classname = strtolower(false === $pos?$classname:substr($classname,$pos+1));//调用该方法的类的短名称
@@ -36,7 +34,6 @@ class General {
         ]);
 
         $nav = [
-
             [
                 'url'   => Router::create('Admin','User','index1'),
                 'title' => '用户',
@@ -99,6 +96,9 @@ class General {
                         ],
                     ],
                 ];
+                break;
+            case 'index':
+
                 break;
             default:
                 throw new \Exception();

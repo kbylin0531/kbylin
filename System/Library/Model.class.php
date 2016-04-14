@@ -34,7 +34,7 @@ class Model {
      * @return \System\Core\Dao
      */
     protected function getDao($index=null){
-        if(isset($this->dao[$index])){
+        if(!isset($this->dao[$index])){
             $this->dao[$index] = Dao::getInstance($index);
         }
         return $this->dao[$index];

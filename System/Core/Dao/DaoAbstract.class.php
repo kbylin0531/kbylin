@@ -44,7 +44,9 @@ abstract class DaoAbstract extends PDO {
      */
     public function __construct(array $config){
         try {
-            parent::__construct($this->buildDSN($config),$config['username'],$config['password'],$config['options']);
+            $dsn = is_string($config['dsn'])?$config['dsn']:$this->buildDSN($config);
+//            dumpout($dsn,$config['username'],$config['password'],$config['options']);
+            parent::__construct($dsn,$config['username'],$config['password'],$config['options']);
         } catch(\PDOException $e){
             throw new KbylinException('连接失败!错误:'.$e->getMessage());
         }
