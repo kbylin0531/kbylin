@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+
+<title>jQuery可任意拖拽排序菜单树机构树特效代码 - JS代码网</title>
+
+<link rel="stylesheet" type="text/css" href="css/stylesheet.css" media="screen">
+<link rel="stylesheet" type="text/css" href="css/github-dark.css" media="screen">
+<link rel="stylesheet" type="text/css" href="css/sortable-list.css" media="screen">
+
+<script src="js/jquery-git1.min.js"></script>
+<script src="js/jquery-sortable-lists.min.js"></script>
+<script type="text/javascript">
+	$(function()
+	{
+		var options = {
+				placeholderCss: {'background-color': '#ff8'},
+				hintCss: {'background-color':'#bbf'},
+				isAllowed: function(cEl, hint, target)
+				{
+					if(hint.parents('li').first().data('module') === 'c' && cEl.data('module') !== 'c')
+					{
+						hint.css('background-color', '#ff9999');
+						return false;
+					}
+					else
+					{
+						hint.css('background-color', '#99ff99');
+						return true;
+					}
+				},
+				opener: {
+					 active: true,
+					 close: 'images/Remove2.png',
+					 open: 'images/Add2.png',
+					 openerCss: {
+						 'display': 'inline-block',
+						 'width': '18px',
+						 'height': '18px',
+						 'float': 'left',
+						 'margin-left': '-35px',
+						 'margin-right': '5px',
+						 'background-position': 'center center',
+						 'background-repeat': 'no-repeat'
+					 },
+					 openerClass: ''
+				}
+			};
+
+		$('#sTree2, #sTree').sortableLists(options);
+
+		$('#toArrBtn').on('click', function(){ console.log($('#sTree2').sortableListsToArray()); });
+		$('#toHierBtn').on('click', function() { console.log($('#sTree2').sortableListsToHierarchy()); });
+		$('#toStrBtn').on('click', function() { console.log($('#sTree2').sortableListsToString()); });
+		$('.descPicture').on('click', function(e) { $(this).toggleClass('descPictureClose'); });
+	});
+</script>
+</head>
+<body>
+    <div class="container">
+      	<section id="main_content">
+
+	<ul class="sTree2 listsClass" id="sTree2">
+				<li id="item_a" data-module="a">
+					<div>选项 a</div>
+				</li>
+				<li class="sortableListsOpen" id="item_b" data-module="b">
+					<div>选项 b</div>
+					<ul class="">
+						<li id="item_b1" data-module="b">
+							<div>选项 b1</div>
+						</li>
+						<li id="item_b2" data-module="b">
+							<div>选项 b2</div>
+						</li>
+						<li id="item_b3" data-module="b">
+							<div>选项 b3</div>
+						</li>
+						<li id="item_b4" data-module="b">
+							<div>选项 b4</div>
+						</li>
+						<li id="item_b5" data-module="b">
+							<div>选项 b5</div>
+						</li>
+					</ul>
+				</li>
+				<li class="" id="item_c" data-module="c">
+					<div>选项 c</div>
+					<ul class="">
+						<li id="item_c1" data-module="c">
+							<div>选项 c1</div>
+						</li>
+						<li id="item_c2" data-module="c">
+							<div>选项 c2</div>
+						</li>
+						<li id="item_c3" data-module="c">
+							<div>选项 c3</div>
+						</li>
+						<li id="item_c4" data-module="c">
+							<div>选项 c4</div>
+						</li>
+						<li id="item_c5" data-module="c">
+							<div>选项 c5</div>
+						</li>
+					</ul>
+				</li>
+				<li class="" id="item_d" data-module="d">
+					<div>选项 d</div>
+					<ul class="">
+						<li id="item_d1" data-module="d">
+							<div>选项 d1</div>
+						</li>
+						<li id="item_d2" data-module="d">
+							<div>选项 d2</div>
+						</li>
+						<li id="item_d3" data-module="d">
+							<div>选项 d3</div>
+						</li>
+						<li id="item_d4" data-module="d">
+							<div>选项 d4</div>
+						</li>
+						<li id="item_d5" data-module="d">
+							<div>选项 d5</div>
+						</li>
+					</ul>
+				</li>
+				<li class="" id="item_e" data-module="e">
+					<div>选项 e</div>
+				</li>
+				<li class="" id="item_f" data-module="f">
+					<div>选项 f</div>
+				</li>
+			</ul>
+
+      </section>
+    </div>
+</body>
+</html>
+	<div style="display:none">
+	<script type="text/javascript">
+	var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+	document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F6f798e51a1cd93937ee8293eece39b1a' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_5718743'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s9.cnzz.com/stat.php%3Fid%3D5718743%26show%3Dpic2' type='text/javascript'%3E%3C/script%3E"));</script>
+	</div>

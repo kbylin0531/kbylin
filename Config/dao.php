@@ -5,9 +5,9 @@
  * Date: 2016/3/24
  * Time: 15:13
  */
-return [
 
-    'DRIVER_DEFAULT_INDEX' => 0,
+return [
+    'DRIVER_DEFAULT_INDEX' => 2,//默认为0
     'DRIVER_CLASS_LIST' => [
         \System\Core\Dao\MySQL::class,
         \System\Core\Dao\OCI::class,
