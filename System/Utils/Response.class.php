@@ -34,20 +34,21 @@ class Response {
 
     public static function success($message){
         self::ajaxBack([
-            'message'   => $message,
-            'type'      => self::MESSAGE_TYPE_SUCCESS,
+            '_message'   => $message,
+            '_type'      => self::MESSAGE_TYPE_SUCCESS,
         ]);
     }
 
     public static function failed($message){
         self::ajaxBack([
-            'message'   => $message,
-            'type'      => self::MESSAGE_TYPE_FAILURE,
+            '_message'   => $message,
+            '_type'      => self::MESSAGE_TYPE_FAILURE,
         ]);
     }
 
     /**
      * Ajax方式返回数据到客户端
+     * 调用改函数将会导致脚本结束
      * @access protected
      * @param mixed $data 要返回的数据
      * @param int $type AJAX返回数据格式

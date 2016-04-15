@@ -6,7 +6,6 @@
  * Time: 10:51
  */
 namespace System\Library\View;
-use Smarty;
 use System\Core\Exception\FileNotFoundException;
 use System\Library\View;
 use System\Utils\Network;
@@ -41,15 +40,15 @@ class SmartyEngine implements ViewEngineInterface {
     protected $_tVars = [];
 
     /**
-     * @var Smarty
+     * @var \SmartyBC
      */
     private $smarty = null;
 
     public function __construct(array $config){
         defined('SMARTY_DIR') or define('SMARTY_DIR',$this->convention['SMARTY_DIR']);
         if(!isset($this->smarty)){
-            require_once SMARTY_DIR.'Smarty.class.php';
-            $this->smarty = new Smarty();
+            require_once SMARTY_DIR.'SmartyBC.class.php';
+            $this->smarty = new \SmartyBC();
             if(isset($this->convention['SMARTY_CONF'])){
 //            $this->smarty->left_delimiter  = $this->convention['DELIMITER_LEFT'];
 //            $this->smarty->right_delimiter = $this->convention['DELIMITER_RIGHT'];
@@ -67,6 +66,18 @@ class SmartyEngine implements ViewEngineInterface {
             });
     }
 
+    /**
+     * 插件注册
+     * @param $type
+     * @param $name
+     * @param $callback
+     * @param bool $cacheable
+     * @param null $cache_attr
+     * @return mixed
+     */
+    public function registerPlugin($type, $name, $callback, $cacheable = true, $cache_attr = null){
+        return $this->registerPlugin($type, $name, $callback, $cacheable , $cache_attr);
+    }
 
     /**
      * 保存控制器分配的变量

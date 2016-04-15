@@ -22,6 +22,17 @@ interface ViewEngineInterface {
     public function setContext(array $context);
 
     /**
+     * 注册一个插件
+     * @param $type
+     * @param $name
+     * @param $callback
+     * @param bool $cacheable
+     * @param null $cache_attr
+     * @return mixed
+     */
+    public function registerPlugin($type, $name, $callback, $cacheable = true, $cache_attr = null);
+
+    /**
      * 保存控制器分配的变量
      * @param string $tpl_var
      * @param null $value

@@ -7,15 +7,35 @@
  */
 namespace Application\Admin\Controller;
 use Application\Admin\Model\IndexModel;
+use Application\Admin\Utils\TemplateTool;
+use System\Library\View;
+use System\Traits\Controller\Render;
+use System\Utils\Response;
 
 class Index{
 
-    public function index(){
+    use Render;
+
+    public function __construct(){}
+
+    public function menus(){
         $indexModel = new IndexModel();
         $menus = $indexModel->listMenus();
-
-        dumpout($menus);
-//        $this->display();
+        if(false === $menus){
+            Response::ajaxBack(['type'=>'error']);
+        }
+        $this->assign('menus',TemplateTool::translate($menus));
+        $this->display();
     }
+
+    public function updateMenus(array $list){
+        $list or Response::failed('You gave the empty message!');
+        $indexModel = new IndexModel();
+        foreach($list as $item){
+            $result = $indexModel->updateMenuItem($item);
+        }
+        Response::success('修改成功！');
+    }
+
 
 }

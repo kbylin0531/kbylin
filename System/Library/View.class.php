@@ -66,6 +66,14 @@ class View {
     }
 
     /**
+     * 获取模板引擎实例
+     * @return SmartyEngine
+     */
+    public static function getDriver(){
+        return self::getDriverInstance();
+    }
+
+    /**
      * 显示模板
      * @param array $context 模板调用上下文环境，包括模块、控制器、方法和模板主题
      * @param null $cache_id

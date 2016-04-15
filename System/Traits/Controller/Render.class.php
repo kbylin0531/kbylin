@@ -68,7 +68,6 @@ trait Render {
         return $this;
     }
 
-
     /**
      * 分配模板变量
      * 全部格式转换成：

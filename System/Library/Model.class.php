@@ -41,5 +41,13 @@ class Model {
         return $this->dao[$index];
     }
 
+    /**
+     * 获取查询的错误
+     * @param null|int|string $index
+     * @return string
+     */
+    protected function getError($index=null){
+        return $this->getDao($index)->getError();
+    }
 
 }

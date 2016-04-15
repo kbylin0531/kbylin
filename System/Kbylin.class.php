@@ -163,8 +163,10 @@ final class Kbylin {
         define('IS_POST',strtoupper($_SERVER['REQUEST_METHOD']) === 'POST');
         //其他常量
         define('APP_NAME',$this->appname);
-        define('BASE_URI',dirname($_SERVER['SCRIPT_NAME']).'/');
-        define('PUBLIC_URI',BASE_URI.'Public/');
+        $script = dirname($_SERVER['SCRIPT_NAME']);
+        IS_WIN and $script = str_replace('\\', '/', $script);
+        define('BASE_URI',$script);
+        define('PUBLIC_URI',BASE_URI.$this->_convention['PUBLIC_DIR']);
 
         self::recordStatus('init_behavior_begin');
         //错误显示和隐藏
@@ -185,6 +187,8 @@ final class Kbylin {
                 if(is_file($filename)) include $filename;//使用include代替include_once提高效率
             }
         }
+
+//        dumpout(BASE_URI,PUBLIC_URI);
 
         $this->_inited = true;
     }

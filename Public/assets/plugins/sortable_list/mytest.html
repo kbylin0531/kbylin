@@ -9,7 +9,7 @@
         html, body, ul, li { margin:0; padding:0; }
         ul, li { list-style-type:none; color:#b5e853; border:1px solid #3f3f3f; }
          ul{ padding:0; background-color:#151515; }
-        ul.sTree2 li, ul#sortableListsBase li { padding-left:50px; margin:5px; border:1px solid #3f3f3f; background-color:#3f3f3f; }
+        ul.sTree2 li{ padding-left:50px; margin:5px; border:1px solid #3f3f3f; background-color:#3f3f3f; }
         li div { padding:7px; background-color:#222; }
         li, ul, div { border-radius: 3px; }
         #sTree2 { margin:10px auto; }
@@ -17,12 +17,11 @@
     </style>
 
     <script src="../../jquery-1.12.0.min.js"></script>
-    <script src="js/jquery-git1.min.js"></script>
     <script src="js/jquery-sortable-lists.min.js"></script>
     <script>
         $(function () {
             var stree = $("#sTree2");
-            var options = {
+            stree.sortableLists( {
                 placeholderCss: {'background-color': '#ff8'},/*拖动时即将空缺的位置的背景色*/
                 hintCss: {'background-color':'red'},/*拖动时即将放入的位置的背景色*/
                 ignoreClass: 'clickable', /* 点击时默认的行为是收获焦点而不是准备移动 */
@@ -58,9 +57,7 @@
                 complete: function(currEl){
                     // Whatever you need to do after the drop
                 }
-            };
-
-            stree.sortableLists( options );
+            } );
         });
     </script>
 </head>
@@ -87,7 +84,7 @@
                 <div>Item b4</div>
             </li>
             <li id="item_b5" data-module="b">
-                <div>Item b5</div>
+                <div >Item b5</div>
             </li>
         </ul>
     </li>
