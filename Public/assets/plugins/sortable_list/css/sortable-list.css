@@ -1,0 +1,30 @@
+	html, body, ul, li { margin:0; padding:0; }
+	ul, li { list-style-type:none; color:#b5e853; border:1px solid #3f3f3f; }
+	ul.sTree, ul{ padding:0px; background-color:#151515; }
+	ul.sTree2 li, ul#sortableListsBase li { padding-left:50px; margin:5px; border:1px solid #3f3f3f; background-color:#3f3f3f; }
+	li div { padding:7px; background-color:#222; Nborder:1px solid #3f3f3f; }
+	li, ul, div { border-radius: 3px; }
+	.red { background-color:#ff9999; }
+	.blue { background-color:#aaaaff;}
+	.green { background-color:#99ff99; }
+	.gree2 { background-color:#bbffbb; }
+	.yellow { background-color:#ff8; }
+	.brown { background-color:#c26b2b; }
+	.pT20 { padding-top:20px; }
+	.pV10 { padding-top:10px; padding-bottom:10px; }
+	.dN { display:none; }
+	.zI1000 { z-index:1000; }
+	.c1 { color:#b5e853; }
+	.c2 { color:#63c0f5; }
+	.c3 { color: #f77720; }
+	.c4 { color: #888; }
+	.bgC1 { background-color:#ccc; }
+	.bgC2 { background-color:#ff8; }
+	.small1 { font-size:0.8em; }
+	.small2 { font-size:0.7em; }
+	.small3 { font-size:0.6em; }
+	.tAR { text-align:right; }
+	.clear { clear:both; }
+	img.descPicture { display:block; width:100%; margin:0 7px 30px 0; float:left; cursor:pointer; /*transition: all 0.5s ease;*/ }
+	img.descPicture.descPictureClose { width:150px; }
+	#sTree2 { margin:10px auto; }

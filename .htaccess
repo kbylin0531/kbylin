@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <IfModule mod_rewrite.c>
   Options +FollowSymlinks
   RewriteEngine On
@@ -8,3 +9,15 @@
   #请求Public资源不经过index.php#
   RewriteRule ^(?![^>]*Public)(.*)$ index.php/$1 [QSA,PT,L]
 </IfModule>
+=======
+<IfModule mod_rewrite.c>
+  Options +FollowSymlinks
+  RewriteEngine On
+
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-f
+
+  #请求Public资源不经过index.php#
+  RewriteRule ^(?![^>]*Public)(.*)$ index.php/$1 [QSA,PT,L]
+</IfModule>
+>>>>>>> 5074fdd666065b44da9222b2537f8dec20deeb5f

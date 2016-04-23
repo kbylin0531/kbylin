@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ChartDirector
 	http://www.advsofteng.com/cdphp.html
 
@@ -15,3 +16,22 @@ pChart
 
 TeeChart
 	http://www.steema.com/products/teechart/overview.html
+=======
+ChartDirector
+	http://www.advsofteng.com/cdphp.html
+
+GraPHPite
+	http://graphpite.sourceforge.net/
+
+JpGraph
+	http://www.aditus.nu/jpgraph/
+
+LibChart
+	http://naku.dohcrew.com/libchart/pages/introduction/
+
+pChart
+	http://pchart.sourceforge.net/
+
+TeeChart
+	http://www.steema.com/products/teechart/overview.html
+>>>>>>> 5074fdd666065b44da9222b2537f8dec20deeb5f
